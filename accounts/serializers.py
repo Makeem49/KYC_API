@@ -20,6 +20,14 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class UserResponseSerializer(serializers.ModelSerializer):
+    """User serializer"""
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name' ]
+
+    
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         # Get the email and password from the submitted data
