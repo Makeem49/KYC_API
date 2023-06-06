@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+    - "8000:8000"
+    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    environment: 
+      - "DJANGO_SECRET_KEY=^tctt1^lox*fdu+t(&*fjshua"
+      - "DJANGO_DEBUG=True"
+      - "SQL_ENGINE=django.db.backends.postgresql"
+      - "SQL_DATABASE=eky_db"
+      - "SQL_USER=eky_db_admin"
+      - "SQL_PASSWORD=eky_db_admin_password"
+      - "SQL_HOST=db"
+      - "SQL_PORT=5432"
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=eky_db_admin
+      - POSTGRES_PASSWORD=eky_db_admin_password
+      - POSTGRES_DB=eky_db
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
