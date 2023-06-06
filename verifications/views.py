@@ -82,10 +82,13 @@ class OkraEventNotification(APIView):
         else:
             customer = Customer.objects.filter(email=email).first()
         
-        if customer.complete_onboarding:
-            return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_409_CONFLICT)
+        # if customer.complete_onboarding:
+        #     return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_409_CONFLICT)
 
         if customer:
+            if customer.complete_onboarding:
+                return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_200_CREATED)
+
             if callback_type == constants.IDENTITY:
                 customer.fill_customer_detail(payload, data, customer)
             elif callback_type == constants.BALANCE:
