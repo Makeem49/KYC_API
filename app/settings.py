@@ -99,10 +99,10 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("SQL_ENGINE"),
-        "NAME": env("SQL_DATABASE"),
-        "USER": env("SQL_USER", "user"),
-        "PASSWORD": env("SQL_PASSWORD", "password"),
+        "ENGINE": env("SQL_ENGINE", 'djngo.db.backends.postgresql '),
+        "NAME": env("SQL_DATABASE", 'ey_db'),
+        "USER": env("SQL_USER", "eky_db_admin"),
+        "PASSWORD": env("SQL_PASSWORD", "ky_db_admin_password"),
         "HOST": env("SQL_HOST", "localhost"),
         "PORT": env("SQL_PORT", "5432"),
     }
