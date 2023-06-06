@@ -178,11 +178,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 # dj_rest setting 
 USE_JWT = True
 
-
-# celery config 
-from celery.schedules import crontab
-from datetime import datetime
-
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles" 

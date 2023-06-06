@@ -35,4 +35,4 @@ ENV SQL_PASSWORD eky_db_admin_password
 ENV SQL_HOST db 
 ENV SQL_PORT 5432 
 
-RUN gunicorn app.wsgi:application --bind 0.0.0.0:8000
+
