@@ -99,8 +99,8 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("SQL_ENGINE", 'djngo.db.backends.postgresql '),
-        "NAME": env("SQL_DATABASE", 'ey_db'),
+        "ENGINE": env("SQL_ENGINE", 'django.db.backends.postgresql'),
+        "NAME": env("SQL_DATABASE", 'eky_db'),
         "USER": env("SQL_USER", "eky_db_admin"),
         "PASSWORD": env("SQL_PASSWORD", "ky_db_admin_password"),
         "HOST": "localhost",
@@ -152,10 +152,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50
 }
