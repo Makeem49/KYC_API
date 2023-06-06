@@ -101,6 +101,8 @@ class OkraEventNotification(APIView):
     
     
 class CustomerUpdateView(UpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerUpdateSerializer
     
