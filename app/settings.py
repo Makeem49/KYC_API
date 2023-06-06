@@ -103,7 +103,7 @@ DATABASES = {
         "NAME": env("SQL_DATABASE", 'ey_db'),
         "USER": env("SQL_USER", "eky_db_admin"),
         "PASSWORD": env("SQL_PASSWORD", "ky_db_admin_password"),
-        "HOST": env("SQL_HOST", "localhost"),
+        "HOST": env("localhost"),
         "PORT": env("SQL_PORT", "5432"),
     }
 }
