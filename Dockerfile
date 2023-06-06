@@ -21,3 +21,5 @@ RUN pip install -r requirements.txt
 
 # Copy project
 COPY . .
+
+RUN gunicorn app.wsgi:application --bind 0.0.0.0:8000
