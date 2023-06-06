@@ -22,4 +22,17 @@ RUN pip install -r requirements.txt
 # Copy project
 COPY . .
 
+ENV DJANGO_SECRET_KEY your_secret_key_here
+ENV POSTGRES_USER eky_db_admin
+ENV POSTGRES_PASSWORD eky_db_admin_password
+ENV POSTGRES_DB eky_db
+ENV DJANGO_SECRET_KEY ^tctt1^lox*fdu+t&*fjshua 
+ENV DJANGO_DEBUG True 
+ENV SQL_ENGINE django.db.backends.postgresql 
+ENV SQL_DATABASE eky_db 
+ENV SQL_USER eky_db_admin 
+ENV SQL_PASSWORD eky_db_admin_password 
+ENV SQL_HOST db 
+ENV SQL_PORT 5432 
+
 RUN gunicorn app.wsgi:application --bind 0.0.0.0:8000
