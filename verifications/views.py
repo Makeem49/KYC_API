@@ -67,8 +67,11 @@ class CustomerListView(ListAPIView):
     
 
 class OkraEventNotification(APIView):
-
+    
     def get(self, request, format=None):
+        return Response(status=status.HTTP_201_CREATED)
+
+    def post(self, request, format=None):
         request_data = request.body
         decode_data = request_data.decode('utf-8')
         payload = json.loads(decode_data)
