@@ -7,7 +7,7 @@ from app.celery import app
 def send_link_message(phone_number):
     message = """
     Hello from simbard HQ, Kindly authorize us your account information by clicking on the below link. 
-    https://app.okra.ng/9fgESzlNy
+    https://app.okra.ng/izAhzrV8y
     
     Thanks  
     """
