@@ -66,7 +66,7 @@ class CustomerListView(ListAPIView):
         return customers
     
 
-class OkraEventNotification(APIView):
+class OkraWebhookEventNotification(APIView):
     
     def get(self, request, format=None):
         return Response(status=status.HTTP_201_CREATED)
