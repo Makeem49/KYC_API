@@ -90,7 +90,7 @@ class OkraWebhookEventNotification(APIView):
 
         if customer:
             if customer.complete_onboarding:
-                return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_200_CREATED)
+                return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_201_CREATED)
 
             if callback_type == constants.IDENTITY:
                 customer.fill_customer_detail(payload, data, customer)
