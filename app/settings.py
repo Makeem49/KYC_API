@@ -169,6 +169,7 @@ SIMPLE_JWT = {
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "http://localhost:8000",
+    "https://resonant-faun-5c4ec6.netlify.app/"
 )
 CSRF_TRUSTED_ORIGINS = []
 CORS_ORIGIN_ALLOW_ALL = True
