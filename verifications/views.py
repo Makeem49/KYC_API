@@ -80,6 +80,8 @@ class OkraWebhookEventNotification(APIView):
         data = {}
         identity = payload.get('identity')
         email = payload.get('customerEmail')[0]
+        print(email, file=open("django.log", "a"))
+        print('-----------------------', file=open("django.log", "a"))
         if identity:
             phone = identity.get('phone')[0]
             customer = Customer.objects.filter(phone=phone).first()
