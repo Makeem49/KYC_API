@@ -123,6 +123,8 @@ class OkraWebhookEventNotification(APIView):
                 log_file.write(str(payload) + '\n')
                 log_file.write(email + '\n')
                 log_file.write('-----------------------\n')
+                if identity:
+                    log_file.write(identity + '\n')
 
             if identity:
                 phone = identity.get('phone')[0]
