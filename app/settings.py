@@ -172,7 +172,7 @@ CORS_ORIGIN_WHITELIST = (
     "https://resonant-faun-5c4ec6.netlify.app", 
     "https://kyc.sinbadhq.com"
 )
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = ["https://kyc.sinbadhq.com"]
 CORS_ORIGIN_ALLOW_ALL = True
 
 
