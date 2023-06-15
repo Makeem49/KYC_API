@@ -112,6 +112,10 @@ class OkraWebhookEventNotification(APIView):
         try:
             payload = json.loads(request.body.decode('utf-8'))
             callback_type = payload.get('callback_type')
+            
+            if callback_type in (constants.AUTH, constants.TRANSACTIONS, constants.ACCOUNTS):
+                return Response(status=status.HTTP_200_OK)
+            
             identity = payload.get('identity')
             email = payload.get('customerEmail')[0]
 
