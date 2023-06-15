@@ -76,33 +76,33 @@ class OkraWebhookEventNotification(APIView):
         decode_data = request_data.decode('utf-8')
         payload = json.loads(decode_data)
         print(payload)
-        callback_type = payload.get('callback_type')
-        data = {}
-        identity = payload.get('identity')
-        email = payload.get('customerEmail')[0]
-        if identity:
-            phone = identity.get('phone')[0]
-            customer = Customer.objects.filter(phone=phone).first()
-        else:
-            customer = Customer.objects.filter(email=email).first()
+        # callback_type = payload.get('callback_type')
+        # data = {}
+        # identity = payload.get('identity')
+        # email = payload.get('customerEmail')[0]
+        # if identity:
+        #     phone = identity.get('phone')[0]
+        #     customer = Customer.objects.filter(phone=phone).first()
+        # else:
+        #     customer = Customer.objects.filter(email=email).first()
         
-        # if customer.complete_onboarding:
-        #     return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_409_CONFLICT)
+        # # if customer.complete_onboarding:
+        # #     return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_409_CONFLICT)
 
-        if customer:
-            if customer.complete_onboarding:
-                return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_201_CREATED)
+        # if customer:
+        #     if customer.complete_onboarding:
+        #         return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_201_CREATED)
 
-            if callback_type == constants.IDENTITY:
-                customer.fill_customer_detail(payload, data, customer)
-            elif callback_type == constants.BALANCE:
-                customer.fill_account_balance(payload, customer)
-            elif callback_type == constants.INCOME:
-                CustomerIncomeData.fill_income_data(payload, customer)
+        #     if callback_type == constants.IDENTITY:
+        #         customer.fill_customer_detail(payload, data, customer)
+        #     elif callback_type == constants.BALANCE:
+        #         customer.fill_account_balance(payload, customer)
+        #     elif callback_type == constants.INCOME:
+        #         CustomerIncomeData.fill_income_data(payload, customer)
         
-            return Response(status=status.HTTP_201_CREATED)
-        return Response({'exception': 'Phone number does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        # return Response(status=status.HTTP_201_CREATED)
+        #     return Response(status=status.HTTP_201_CREATED)
+        # return Response({'exception': 'Phone number does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_201_CREATED)
     
     
 class CustomerUpdateView(UpdateAPIView):
