@@ -190,7 +190,7 @@ SIMPLE_JWT = {
 }
 
 
-logging settings
+# logging settings
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
