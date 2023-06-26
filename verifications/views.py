@@ -100,7 +100,6 @@ class OkraWebhookEventNotification(APIView):
 
             if identity:
                 phone = identity.get('phone')[0]
-                
                 customer = Customer.objects.filter(phone=phone).first()
             else:
                 customer = Customer.objects.filter(Q(bvn=customer_bvn) |
@@ -125,9 +124,8 @@ class OkraWebhookEventNotification(APIView):
 
         except json.JSONDecodeError:
             return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
-        # except Exception as e:
-        #     print(e)
-        #     return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 class CustomerUpdateView(UpdateAPIView):
