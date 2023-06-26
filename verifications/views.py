@@ -117,7 +117,11 @@ class OkraWebhookEventNotification(APIView):
                 return Response(status=status.HTTP_200_OK)
             
             identity = payload.get('identity')
-            email = payload.get('customerEmail')[0]
+            email = payload.get('customerEmail')
+            if email:
+                email = payload.get('customerEmail')[0]
+            else:
+                customer_id = payload.get('customerId')
 
             with open("django.log", "a") as log_file:
                 log_file.write(str(payload) + '\n')
@@ -129,8 +133,10 @@ class OkraWebhookEventNotification(APIView):
             if identity:
                 phone = identity.get('phone')[0]
                 customer = Customer.objects.filter(phone=phone).first()
+            elif customer_id is not None:
+                customer = Customer.objects.filter(customer_id=customer_id).first() 
             else:
-                customer = Customer.objects.filter(email=email).first()
+                customer = Customer.objects.filter(email=email).first() 
 
             if customer:
                 if customer.complete_onboarding:
