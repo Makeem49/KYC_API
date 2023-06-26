@@ -4,7 +4,7 @@ import requests
 # Your Account SID and Auth Token from console.twilio.com
 def send_bank_authorization_link(number,message_body):
     
-    url = "https://termii.com/api/sms/send"
+    url = "https://api.ng.termii.com/api/sms/send"
     payload = {
             "to": number,
             "from": 'Simbard',
