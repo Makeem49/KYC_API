@@ -91,7 +91,11 @@ class Customer(models.Model):
             data['address'] = identity.get('address')[0]
         if identity.get('photo_id'):
             data['photo_id'] = identity.get('photo_id')[0].get('url')
-        data['dob'] = identity.get('dob')
+            
+        date_string = identity.get('dob')
+        date_object = datetime.strptime(date_string, "%d/%m/%Y")
+        formatted_date = date_object.strftime("%Y-%m-%d")
+        data['dob'] = formatted_date
         data['verification_country'] = identity.get('verification_country')
         data['created_at'] = datetime.utcnow()
         data['gender'] = identity.get('gender')
