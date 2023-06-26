@@ -8,6 +8,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.db.models import Q
+
 
 from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
                         CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer)
@@ -65,43 +67,6 @@ class CustomerListView(ListAPIView):
             customers = customers.exclude(customerincomedata__pk__isnull=True).filter(status=param)
         return customers
     
-
-# class OkraWebhookEventNotification(APIView):
-    
-#     def get(self, request, format=None):
-#         return Response(status=status.HTTP_201_CREATED)
-
-#     def post(self, request, format=None):
-#         request_data = request.body
-#         decode_data = request_data.decode('utf-8')
-#         payload = json.loads(decode_data)
-#         print(payload, file=open("django.log", "a"))
-#         callback_type = payload.get('callback_type')
-#         data = {}
-#         identity = payload.get('identity')
-#         email = payload.get('customerEmail')[0]
-#         print(email, file=open("django.log", "a"))
-#         print('-----------------------', file=open("django.log", "a"))
-#         if identity:
-#             phone = identity.get('phone')[0]
-#             customer = Customer.objects.filter(phone=phone).first()
-#         else:
-#             customer = Customer.objects.filter(email=email).first()
-        
-#         if customer:
-#             if customer.complete_onboarding:
-#                 return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_201_CREATED)
-
-#             if callback_type == constants.IDENTITY:
-#                 customer.fill_customer_detail(payload, data, customer)
-#             elif callback_type == constants.BALANCE:
-#                 customer.fill_account_balance(payload, customer)
-#             elif callback_type == constants.INCOME:
-#                 CustomerIncomeData.fill_income_data(payload, customer)
-        
-#             return Response(status=status.HTTP_201_CREATED)
-#         return Response({'exception': 'Phone number does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        
     
 class OkraWebhookEventNotification(APIView):
 
@@ -118,6 +83,7 @@ class OkraWebhookEventNotification(APIView):
             
             identity = payload.get('identity')
             email = payload.get('customerEmail')
+            customer_bvn = payload.get('customerBvn')
             
             if email:
                 email = payload.get('customerEmail')[0]
@@ -134,11 +100,12 @@ class OkraWebhookEventNotification(APIView):
 
             if identity:
                 phone = identity.get('phone')[0]
+                
                 customer = Customer.objects.filter(phone=phone).first()
-            elif customer_id is not None:
-                customer = Customer.objects.filter(customer_id=customer_id).first() 
             else:
-                customer = Customer.objects.filter(email=email).first() 
+                customer = Customer.objects.filter(Q(bvn=customer_bvn) |
+                                               Q(customer_id=customer_id) | 
+                                               Q(email=email)).first()
 
             if customer:
                 if customer.complete_onboarding:
