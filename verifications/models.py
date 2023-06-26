@@ -93,7 +93,7 @@ class Customer(models.Model):
             data['photo_id'] = identity.get('photo_id')[0].get('url')
             
         date_string = identity.get('dob')
-        date_object = datetime.strptime(date_string, "%d/%m/%Y")
+        date_object = datetime.strptime(date_string, "%d/%m/%Y").date()
         formatted_date = date_object.strftime("%Y-%m-%d")
         data['dob'] = formatted_date
         data['verification_country'] = identity.get('verification_country')
