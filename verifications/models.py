@@ -68,7 +68,8 @@ class Customer(models.Model):
             
         self.save()
         
-    def fill_customer_detail(self, payload, data, customer):
+    def fill_customer_detail(self, payload):
+        data = {}
         identity = payload.get('identity')
         data['bank_name'] = payload.get('bankName')
         data['bank_id'] = payload.get('bankId')
@@ -78,15 +79,24 @@ class Customer(models.Model):
         data['middle_name'] = identity.get('middlename', '')
         data['is_verify'] = True
         data['bvn'] = identity.get('bvn')
-        data['phone'] = identity.get('phone')[0]
-        data['email'] = payload.get('customerEmail')[0]
-        data['address'] = identity.get('address')[0]
-        data['photo_id'] = identity.get('photo_id')[0].get('url')
+        
+        print('0000000000000000000000000')
+        
+        if identity.get('phone'):
+            data['phone'] = identity.get('phone')[0]
+        if payload.get('customerEmail'):
+            data['email'] = payload.get('customerEmail')[0]
+            
+        if identity.get('address'):
+            data['address'] = identity.get('address')[0]
+        if identity.get('photo_id'):
+            data['photo_id'] = identity.get('photo_id')[0].get('url')
         data['dob'] = identity.get('dob')
         data['verification_country'] = identity.get('verification_country')
         data['created_at'] = datetime.utcnow()
         data['gender'] = identity.get('gender')
         data['status'] = self.PENDING
+        
             
         try:
             self.update(data)
@@ -94,7 +104,7 @@ class Customer(models.Model):
             message = 'Customer id already exist'
             raise serializers.ValidationError(message)         
         
-    def fill_account_balance(self, payload, customer):
+    def fill_account_balance(self, payload):
         self.available_balance = payload.get('balance').get('available_balance')
         self.save()
         

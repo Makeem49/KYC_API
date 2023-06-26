@@ -118,6 +118,7 @@ class OkraWebhookEventNotification(APIView):
             
             identity = payload.get('identity')
             email = payload.get('customerEmail')
+            
             if email:
                 email = payload.get('customerEmail')[0]
             else:
@@ -125,10 +126,11 @@ class OkraWebhookEventNotification(APIView):
 
             with open("django.log", "a") as log_file:
                 log_file.write(str(payload) + '\n')
-                log_file.write(email + '\n')
+                if email:
+                    log_file.write(str(email) + '\n')
                 log_file.write('-----------------------\n')
                 if identity:
-                    log_file.write(identity + '\n')
+                    log_file.write(str(identity) + '\n')
 
             if identity:
                 phone = identity.get('phone')[0]
@@ -144,9 +146,9 @@ class OkraWebhookEventNotification(APIView):
                                     status=status.HTTP_201_CREATED)
 
                 if callback_type == constants.IDENTITY:
-                    customer.fill_customer_detail(payload, customer)
+                    customer.fill_customer_detail(payload)
                 elif callback_type == constants.BALANCE:
-                    customer.fill_account_balance(payload, customer)
+                    customer.fill_account_balance(payload)
                 elif callback_type == constants.INCOME:
                     CustomerIncomeData.fill_income_data(payload, customer)
 
@@ -156,8 +158,9 @@ class OkraWebhookEventNotification(APIView):
 
         except json.JSONDecodeError:
             return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except Exception as e:
+        #     print(e)
+        #     return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 class CustomerUpdateView(UpdateAPIView):
