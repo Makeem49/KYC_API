@@ -96,6 +96,7 @@ class Customer(models.Model):
         data['created_at'] = datetime.utcnow()
         data['gender'] = identity.get('gender')
         data['status'] = self.PENDING
+        data['marital_status'] = identity.get('marital_status')
         
             
         try:
