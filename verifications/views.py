@@ -82,29 +82,23 @@ class OkraWebhookEventNotification(APIView):
                 return Response(status=status.HTTP_200_OK)
             
             identity = payload.get('identity')
-            email = payload.get('customerEmail')
             customer_bvn = payload.get('customerBvn')
-            
-            if email:
-                email = payload.get('customerEmail')[0]
-            else:
-                customer_id = payload.get('customerId')
+            customer_id = payload.get('customerId')
 
-            with open("django.log", "a") as log_file:
-                log_file.write(str(payload) + '\n')
-                if email:
-                    log_file.write(str(email) + '\n')
-                log_file.write('-----------------------\n')
-                if identity:
-                    log_file.write(str(identity) + '\n')
+            # with open("django.log", "a") as log_file:
+            #     log_file.write(str(payload) + '\n')
+            #     if email:
+            #         log_file.write(str(email) + '\n')
+            #     log_file.write('-----------------------\n')
+            #     if identity:
+            #         log_file.write(str(identity) + '\n')
 
             if identity:
                 phone = identity.get('phone')[0]
                 customer = Customer.objects.filter(phone=phone).first()
             else:
                 customer = Customer.objects.filter(Q(bvn=customer_bvn) |
-                                               Q(customer_id=customer_id) | 
-                                               Q(email=email)).first()
+                                               Q(customer_id=customer_id)).first()
 
             if customer:
                 if customer.complete_onboarding:
@@ -124,8 +118,8 @@ class OkraWebhookEventNotification(APIView):
 
         except json.JSONDecodeError:
             return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except Exception as e:
+        #     return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 class CustomerUpdateView(UpdateAPIView):
