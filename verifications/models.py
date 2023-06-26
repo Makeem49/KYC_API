@@ -36,7 +36,7 @@ class Customer(models.Model):
     marital_status = models.CharField(max_length=20, null=True, blank=True)
     photo_id = models.ImageField(max_length=500, null=True, blank=True)
     dob = models.CharField(max_length=15, null=True, blank=True)
-    gender = models.CharField(choices=GENDER, max_length=1, default=MALE)
+    gender = models.CharField(choices=GENDER, max_length=20, default=MALE)
     verification_country = models.CharField(max_length=100, null=True, blank=True)
 
     # okra customer id field 
