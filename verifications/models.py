@@ -35,7 +35,7 @@ class Customer(models.Model):
     address = models.CharField(max_length=100, null=True, blank=True)
     marital_status = models.CharField(max_length=100, null=True, blank=True)
     photo_id = models.ImageField(max_length=100, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True)
+    dob = models.CharField(max_length=15, null=True, blank=True)
     gender = models.CharField(choices=GENDER, max_length=1, default=MALE)
     verification_country = models.CharField(max_length=100, null=True, blank=True)
 
@@ -80,7 +80,6 @@ class Customer(models.Model):
         data['is_verify'] = True
         data['bvn'] = identity.get('bvn')
         
-        print('0000000000000000000000000')
         
         if identity.get('phone'):
             data['phone'] = identity.get('phone')[0]
@@ -92,10 +91,7 @@ class Customer(models.Model):
         if identity.get('photo_id'):
             data['photo_id'] = identity.get('photo_id')[0].get('url')
             
-        date_string = identity.get('dob')
-        date_object = datetime.strptime(date_string, "%d/%m/%Y").date()
-        formatted_date = date_object.strftime("%Y-%m-%d")
-        data['dob'] = formatted_date
+        data['dob'] = identity.get('dob')
         data['verification_country'] = identity.get('verification_country')
         data['created_at'] = datetime.utcnow()
         data['gender'] = identity.get('gender')
