@@ -134,7 +134,7 @@ class CustomerIncomeData(models.Model):
         summary = income.get('summary')
         confidence = income.get('confidence')
         monthly_amount = streams[0].get('monthly_amount')
-        source = streams[0].get('source').get('name')
+        source = streams[0].get('details').get('source').get('name')
         account_age_months = summary.get('account_age_months')
         average_monthly_income = summary.get('average_monthly_income')
         last_two_years_income = summary.get('last_two_years_income')
