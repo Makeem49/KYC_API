@@ -48,7 +48,7 @@ def fetch_identity(customer_id):
             data = identity[0]
             user['dob'] = data.get('dob')
             user['bvn'] = data.get('bvn')
-            user['gender'] = data.get('bvn')
+            user['gender'] = data.get('gender').upper()
             
             firstname = data.get('firstname')
             lastname = data.get('lastname')
@@ -101,8 +101,6 @@ def fetch_income(customer_id, customer):
                                 customer=customer
                                 )
         
-        customer.complete_onboarding = True 
-        customer.save()
 
  
 # fetch_balance('64994a384c62fd003b1e0f73')
