@@ -59,7 +59,7 @@ class CustomerListSerializer(serializers.ModelSerializer):
                   'monthly_amount', 'source', 'last_two_years_income', 'confidence']
 
     def get_name(self, obj):
-        return f"{obj.first_name} {obj.last_name}" 
+        return f"{obj.first_name} {obj.last_name}"
 
     def get_source(self, obj):
         return obj.customerincomedata.source
