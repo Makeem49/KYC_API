@@ -103,7 +103,9 @@ class OkraWebhookEventNotification(APIView):
 
                 if callback_type == constants.IDENTITY:
                     data = fetch_identity(customer.customer_id)
-                    print(data)
+                    fetch_income(customer.customer_id, customer)
+                    payload = fetch_balance(customer.customer_id)
+                    customer.fill_account_balance(payload)
                     customer.first_name = data.get('first_name')
                     customer.last_name = data.get('last_name')
                     customer.dob = data.get('dob')
@@ -112,11 +114,11 @@ class OkraWebhookEventNotification(APIView):
                     customer.address = data.get('address')
                     customer.phone = phone  # Set the phone number if not present in the customer object
                     customer.save()
-                elif callback_type == constants.BALANCE:
-                    payload = fetch_balance(customer.customer_id)
-                    # customer.fill_account_balance(payload)
-                elif callback_type == constants.INCOME:
-                    fetch_income(customer.customer_id, customer)
+                # elif callback_type == constants.BALANCE:
+                #     payload = fetch_balance(customer.customer_id)
+                #     # customer.fill_account_balance(payload)
+                # elif callback_type == constants.INCOME:
+                #     fetch_income(customer.customer_id, customer)
                     # CustomerIncomeData.fill_income_data(payload, customer)
                 return Response(status=status.HTTP_201_CREATED)
 
