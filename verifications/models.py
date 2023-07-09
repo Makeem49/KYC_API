@@ -152,4 +152,4 @@ class CustomerIncomeData(models.Model):
                                         customer=customer
                                         )
         customer.complete_onboarding = True 
-        customer.save()
+        # customer.save()
