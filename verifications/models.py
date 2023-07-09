@@ -29,7 +29,7 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=100, null=True, blank=True)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     is_verify = models.BooleanField(default=False, null=False, blank=False)
-    bvn = models.CharField(null=True, blank=True, max_length=11, unique=True)
+    bvn = models.CharField(null=True, blank=True, max_length=11)
     phone = models.CharField(max_length=26, blank=False, null=False, unique=True)
     email = models.EmailField(null=True, blank=True, unique=True)
     address = models.CharField(max_length=500, null=True, blank=True)
@@ -40,7 +40,7 @@ class Customer(models.Model):
     verification_country = models.CharField(max_length=100, null=True, blank=True)
 
     # okra customer id field 
-    customer_id = models.CharField(max_length=200, null=True, unique=True)
+    customer_id = models.CharField(max_length=200, null=True)
 
     # status field 
     status = models.CharField(max_length=20, choices=STATUS, default=INVITED)
