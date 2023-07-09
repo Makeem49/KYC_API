@@ -100,6 +100,9 @@ def fetch_income(customer_id, customer):
                                 last_year_income=last_year_income,
                                 customer=customer
                                 )
+        
+        customer.complete_onboarding = True 
+        customer.save()
 
  
 # fetch_balance('64994a384c62fd003b1e0f73')
