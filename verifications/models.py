@@ -60,7 +60,7 @@ class Customer(models.Model):
     
     
     def __str__(self):
-        return f"BVN number ---> {self.phone}"
+        return f"BVN number ---> {self.bvn}"
 
     def update(self, params):
         for attr, value in params.items():
@@ -71,9 +71,9 @@ class Customer(models.Model):
     def fill_customer_detail(self, payload):
         data = {}
         identity = payload.get('identity')
-        data['bank_name'] = payload.get('bankName')
-        data['bank_id'] = payload.get('bankId')
-        data['customer_id'] = payload.get('customerId')
+        # data['bank_name'] = payload.get('bankName')
+        # data['bank_id'] = payload.get('bankId')
+        # data['customer_id'] = payload.get('customerId')
         data['last_name'] = identity.get('lastname')
         data['first_name'] = identity.get('firstname')
         data['middle_name'] = identity.get('middlename', '')
@@ -106,7 +106,8 @@ class Customer(models.Model):
             raise serializers.ValidationError(message)         
         
     def fill_account_balance(self, payload):
-        self.available_balance = payload.get('balance').get('available_balance')
+        # self.available_balance = payload.get('balance')[0].get('available_balance')
+        self.available_balance = payload.get('data').get('balance')[0].get('available_balance')
         self.save()
         
         
