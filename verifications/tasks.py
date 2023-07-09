@@ -9,6 +9,8 @@ def send_link_message(phone_number):
     Hello from simbard HQ, Kindly authorize us your account information by clicking on the below link. 
     https://app.okra.ng/PfCVZi7-s
     
+    Please use your salary account. 
+    
     Thanks  
     """
     
