@@ -86,11 +86,11 @@ def fetch_income(customer_id, customer):
         streams = user_income_data.get('streams')
         if streams:
             stream = streams[0]
-            monthly_amount = stream.get('monthly_amount')
+            monthly_amount = stream.get('monthly_income')
             source = stream.get('income_type')
-            average_monthly_income = stream.get('average_monthly_income')
+            average_monthly_income = stream.get('avg_monthly_income')
             
-        
+            
         customer_income = CustomerIncomeData.objects.create(
                                 confidence=confidence, 
                                 monthly_amount=monthly_amount,
@@ -104,5 +104,5 @@ def fetch_income(customer_id, customer):
 
  
 # fetch_balance('64994a384c62fd003b1e0f73')
-# fetch_income('64994a384c62fd003b1e0f73')
+# fetch_income('64994a384c62fd003b1e0f73', 'dd')
 # fetch_identity('64994a384c62fd003b1e0f73')
