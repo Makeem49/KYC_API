@@ -30,7 +30,7 @@ class Customer(models.Model):
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     is_verify = models.BooleanField(default=False, null=False, blank=False)
     bvn = models.CharField(null=True, blank=True, max_length=11)
-    phone = models.CharField(max_length=26, blank=False, null=False, unique=True)
+    phone = models.CharField(max_length=26, blank=False, null=False)
     email = models.EmailField(null=True, blank=True, unique=True)
     address = models.CharField(max_length=500, null=True, blank=True)
     marital_status = models.CharField(max_length=20, null=True, blank=True)
@@ -122,7 +122,7 @@ class CustomerIncomeData(models.Model):
     last_two_years_income = models.FloatField(null=True)
     last_year_income = models.FloatField(null=True)
     
-    customer = models.OneToOneField(Customer, on_delete=models.PROTECT, null=False)
+    customer = models.ManyToManyField(Customer, null=False)
 
 
     def __str__(self) -> str:
