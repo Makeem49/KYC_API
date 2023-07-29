@@ -14,7 +14,7 @@ from django.db.models import Q
 from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
                         CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer, 
                         OnBoardingSerializer, RiskThresholdSerializer)
-from .models import Customer, CustomerIncomeData, RiskThreshold
+from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
 

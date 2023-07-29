@@ -183,29 +183,4 @@ class CustomerIncomeData(models.Model):
 
     def __str__(self) -> str:
         return f"{self.customer.first_name} {self.customer.last_name} has {self.confidence} confidence level"
-    
-    @classmethod
-    def fill_income_data(cls, payload, customer):
-        income = payload.get('income')
-        streams = income.get('streams')
-        summary = income.get('summary')
-        confidence = income.get('confidence')
-        monthly_amount = streams[0].get('monthly_amount')
-        source = streams[0].get('details').get('source').get('name')
-        account_age_months = summary.get('account_age_months')
-        average_monthly_income = summary.get('average_monthly_income')
-        last_two_years_income = summary.get('last_two_years_income')
-        last_year_income = summary.get('last_year_income')
-                
-        customer_income = CustomerIncomeData.objects.create(
-                                        confidence=confidence, 
-                                        monthly_amount=monthly_amount,
-                                        source=source,
-                                        average_monthly_income=average_monthly_income,
-                                        account_age_months=account_age_months,
-                                        last_two_years_income=last_two_years_income, 
-                                        last_year_income=last_year_income,
-                                        customer=customer
-                                        )
-        customer.complete_onboarding = True 
-    
+   
