@@ -87,58 +87,58 @@ class CustomerOnBoard_view(ListAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     
-class OkraWebhookEventNotification(APIView):
-    def get(self, request, format=None):
-        return Response(status=status.HTTP_200_OK)
+# class OkraWebhookEventNotification(APIView):
+#     def get(self, request, format=None):
+#         return Response(status=status.HTTP_200_OK)
 
-    def post(self, request, format=None):
-        try:
-            payload = json.loads(request.body.decode('utf-8'))
-            callback_type = payload.get('callback_type')
+#     def post(self, request, format=None):
+#         try:
+#             payload = json.loads(request.body.decode('utf-8'))
+#             callback_type = payload.get('callback_type')
 
-            if callback_type in (constants.AUTH, constants.TRANSACTIONS, constants.ACCOUNTS):
-                return Response(status=status.HTTP_200_OK)
+#             if callback_type in (constants.AUTH, constants.TRANSACTIONS, constants.ACCOUNTS):
+#                 return Response(status=status.HTTP_200_OK)
 
-            identity = payload.get('identity')
-            customer_bvn = payload.get('customerBvn')
-            customer_id = payload.get('customerId')
+#             identity = payload.get('identity')
+#             customer_bvn = payload.get('customerBvn')
+#             customer_id = payload.get('customerId')
 
-            if identity:
-                phone = identity.get('phone')[0]
-                customer, created = Customer.objects.get_or_create(phone=phone, defaults={'bvn': customer_bvn, 'customer_id': customer_id})
-                if created:
-                    # New customer created, perform additional setup if needed
-                    pass
-            else:
-                customer = Customer.objects.filter(Q(bvn=customer_bvn) | Q(customer_id=customer_id)).first()
+#             if identity:
+#                 phone = identity.get('phone')[0]
+#                 customer, created = Customer.objects.get_or_create(phone=phone, defaults={'bvn': customer_bvn, 'customer_id': customer_id})
+#                 if created:
+#                     # New customer created, perform additional setup if needed
+#                     pass
+#             else:
+#                 customer = Customer.objects.filter(Q(bvn=customer_bvn) | Q(customer_id=customer_id)).first()
 
-            print(customer)
-            if customer:
-                if customer.complete_onboarding:
-                    return Response({'exception': 'Customer already onboarded. Contact admin to request a new link.'}, 
-                                    status=status.HTTP_201_CREATED)
+#             print(customer)
+#             if customer:
+#                 if customer.complete_onboarding:
+#                     return Response({'exception': 'Customer already onboarded. Contact admin to request a new link.'}, 
+#                                     status=status.HTTP_201_CREATED)
 
-                if callback_type == constants.IDENTITY:
-                    data = fetch_identity(customer.customer_id)
-                    fetch_income(customer.customer_id, customer)
-                    payload = fetch_balance(customer.customer_id)
-                    customer.fill_account_balance(payload)
-                    customer.first_name = data.get('first_name')
-                    customer.last_name = data.get('last_name')
-                    customer.dob = data.get('dob')
-                    customer.gender = data.get('gender')
-                    customer.email = data.get('email')
-                    customer.address = data.get('address')
-                    customer.phone = phone  # Set the phone number if not present in the customer object
-                    customer.save()
-                return Response(status=status.HTTP_201_CREATED)
+#                 if callback_type == constants.IDENTITY:
+#                     data = fetch_identity(customer.customer_id)
+#                     fetch_income(customer.customer_id, customer)
+#                     payload = fetch_balance(customer.customer_id)
+#                     customer.fill_account_balance(payload)
+#                     customer.first_name = data.get('first_name')
+#                     customer.last_name = data.get('last_name')
+#                     customer.dob = data.get('dob')
+#                     customer.gender = data.get('gender')
+#                     customer.email = data.get('email')
+#                     customer.address = data.get('address')
+#                     customer.phone = phone  # Set the phone number if not present in the customer object
+#                     customer.save()
+#                 return Response(status=status.HTTP_201_CREATED)
 
-            return Response({'exception': 'Customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
+#             return Response({'exception': 'Customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        except json.JSONDecodeError:
-            return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         except json.JSONDecodeError:
+#             return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
+#         except Exception as e:
+#             return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 class CustomerUpdateView(UpdateAPIView):
