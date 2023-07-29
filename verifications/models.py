@@ -6,19 +6,64 @@ from rest_framework import serializers
 
 # Create your models here.
 
+class RiskThreshold(models.Model):
+    
+    # countries options 
+    NIGERIA = 'NIGERIA'
+    INDIA = 'INDIA'
+    INDONESIA = 'INDONESIA'
+    
+    
+    COUNTRIES = [
+        (NIGERIA, 'Pending'),
+        (INDIA, 'Approve'), 
+        (INDONESIA, 'Reject'), 
+    ]
+    
+    account_balance = models.DecimalField(max_digits=16, decimal_places=2)
+    employed = models.BooleanField(null=False)
+    minimum_monthly_salary = models.DecimalField(max_digits=16, decimal_places=2)
+    country = models.CharField(max_length=10, choices=COUNTRIES, null=False, unique=True)
+    
+    
+    def __str__(self) -> str:
+        return f"threshold id {self.id}"
+    
+    
+class AppID(models.Model):
+    app_id = models.CharField(max_length=200, null=False)
+    
+    def __str__(self) -> str:
+        return self.app_id
+
+
 class Customer(models.Model):
+    # status options
     PENDING = 'PENDING'
     APPROVE = 'APPROVE'
     REJECT = 'REJECT'
     INVITED = 'INVITED'
-
+    
+    # residential options 
+    OWNED = 'OWNED'
+    RENT = 'RENT'
+    INHERITED = 'INHERITED'
+    
+    #choices
     STATUS = [
         (PENDING, 'Pending'),
         (APPROVE, 'Approve'), 
         (REJECT, 'Reject'), 
         (INVITED, 'INVITED')
     ]
-
+    
+    #choices
+    RESIDENTIAL_TYPE = [
+        (OWNED , 'OWNED'),
+        (RENT , 'RENT'),
+        (INHERITED , 'INHERITED')
+    ]
+    
     MALE = "M"
     FEMALE = "F"
     GENDER = [(MALE, "Male"), (FEMALE, "Female")]
@@ -34,13 +79,13 @@ class Customer(models.Model):
     email = models.EmailField(null=True, blank=True, unique=True)
     address = models.CharField(max_length=500, null=True, blank=True)
     marital_status = models.CharField(max_length=20, null=True, blank=True)
-    photo_id = models.ImageField(max_length=500, null=True, blank=True)
+    photo_id = models.CharField(max_length=500, null=True, blank=True)
     dob = models.CharField(max_length=15, null=True, blank=True)
     gender = models.CharField(choices=GENDER, max_length=20, default=MALE)
-    verification_country = models.CharField(max_length=100, null=True, blank=True)
+    nationality = models.CharField(max_length=100, null=True, blank=True)
 
     # okra customer id field 
-    customer_id = models.CharField(max_length=200, null=True)
+    borrower_id = models.CharField(max_length=200, null=True)
 
     # status field 
     status = models.CharField(max_length=20, choices=STATUS, default=INVITED)
@@ -51,12 +96,19 @@ class Customer(models.Model):
     # time the user grant us access to their account and when last the account was updated 
     created_at = models.DateTimeField(null=True, default=datetime.utcnow)
     
-    # bank name
-    bank_name = models.CharField(max_length=100, null=True, blank=True)
-    bank_id = models.CharField(max_length=100, null=True, blank=True)
+    residential_address = models.CharField(max_length=200, null=False)
+    residential_type = models.CharField(max_length=20, choices=RESIDENTIAL_TYPE, null=False)
     
-    available_balance = models.CharField(max_length=100, null=True, blank=True)
-    complete_onboarding = models.BooleanField(default=False)
+    
+    # credit check 
+    lga_origin = models.CharField(max_length=100, null=True)
+    lga_residence = models.CharField(max_length=100, null=True)
+    nin = models.CharField(max_length=15, null=True)
+    watchlist = models.CharField(max_length=20, null=False, default='No')
+    
+    # RELATIONSHIP
+    risk_country_threshold = models.ForeignKey(RiskThreshold, on_delete=models.PROTECT, null=False)
+    app_id = models.ForeignKey(AppID, on_delete=models.PROTECT, null=True)
     
     
     def __str__(self):
@@ -111,18 +163,22 @@ class Customer(models.Model):
         self.save()
         
         
-
 class CustomerIncomeData(models.Model):
     """Table showing the customer income data"""
-    confidence = models.FloatField(max_length=10, null=True)
-    source = models.CharField(max_length=100, null=False)
-    monthly_amount = models.CharField(max_length=100, null=True)
-    average_monthly_income = models.FloatField(null=True)
-    account_age_months = models.IntegerField(null=True)
-    last_two_years_income = models.FloatField(null=True)
-    last_year_income = models.FloatField(null=True)
+    average_monthly_income = models.DecimalField(max_digits=16, decimal_places=2, null=False)
+    total_money_received = models.DecimalField(max_digits=16, decimal_places=2, null=False)
+    total_money_spent = models.DecimalField(max_digits=16, decimal_places=2, null=False)
+    eligibility_amount = models.DecimalField(max_digits=20, decimal_places=2, null=False)
+    debt_to_income = models.CharField(max_length=20, null=True)
+    debt_to_income_reason = models.CharField(max_length=200, null=True)
+    institution_name = models.CharField(max_length=30, null=False)
+    bank_code = models.IntegerField(null=False)
+    type = models.CharField(max_length=100, null=False)
+    balance = models.DecimalField(max_digits=10, null=False, decimal_places=2)
+    account_number = models.CharField(max_length=14, null=False)
     
-    customer = models.ManyToManyField(Customer, null=False)
+    
+    customer = models.ManyToManyField(Customer)
 
 
     def __str__(self) -> str:
@@ -152,4 +208,4 @@ class CustomerIncomeData(models.Model):
                                         customer=customer
                                         )
         customer.complete_onboarding = True 
-        # customer.save()
+    

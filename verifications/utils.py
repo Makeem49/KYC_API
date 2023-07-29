@@ -1,8 +1,11 @@
 import requests
-from verifications.models import CustomerIncomeData
+import os 
+
 from okra_py.balance import OkraBalance
 from okra_py.income import OkraIncome
 from okra_py.identity import OkraIdentify
+
+from verifications.models import CustomerIncomeData
 
 okra_balance_api = OkraBalance('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDZiMDcxY2RmYzkyYTI5NWYxOWVjODkiLCJpYXQiOjE2ODQ3NjQ3Mzd9.s44IlyX1RjlUxmmGBjNH47y9YKh_yWUsdpsblTMPz34')
 okra_income_api = OkraIncome('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDZiMDcxY2RmYzkyYTI5NWYxOWVjODkiLCJpYXQiOjE2ODQ3NjQ3Mzd9.s44IlyX1RjlUxmmGBjNH47y9YKh_yWUsdpsblTMPz34')
@@ -75,7 +78,6 @@ def fetch_income(customer_id, customer):
     obj = resp.json()
     data = obj.get('data')
     income = data.get('income')
-    print(income)
 
     if income:
         user_income_data = income[0]
@@ -103,6 +105,13 @@ def fetch_income(customer_id, customer):
         
 
  
-# fetch_balance('64994a384c62fd003b1e0f73')
-# fetch_income('64994a384c62fd003b1e0f73', 'dd')
-# fetch_identity('64994a384c62fd003b1e0f73')
+def verification_by_bvn(bvn):
+    base_url = os.getenv('CREDIT_CHECK_BASE_URL')
+    response = requests.post(f"{base_url}/{'endpoint'}", params={'bvn':bvn})
+    try:
+        data = response.json() 
+    except:
+        return {}
+    return data
+
+
