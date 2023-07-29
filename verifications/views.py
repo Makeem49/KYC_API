@@ -5,15 +5,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 
 
 from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
-                        CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer)
-from .models import Customer, CustomerIncomeData
+                        CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer, 
+                        OnBoardingSerializer, RiskThresholdSerializer)
+from .models import Customer, CustomerIncomeData, RiskThreshold
 from .tasks import send_link_message
 from . import constants
 
@@ -29,17 +30,17 @@ class SMSLinkView(APIView):
         phone = serializer.initial_data.get('phone')
         customer = Customer.objects.filter(phone=phone).first()
         if customer:   
-            if not customer.complete_onboarding:
-                send_link_message(phone)
-                return Response(data=f'Reminder Invite link sent to {phone}', status=status.HTTP_201_CREATED)
-            
-            if customer.complete_onboarding:
-                return Response({'exception' :'Customer already onboarded, contact admin to request for a new link.'} , status=status.HTTP_409_CONFLICT) 
-        
+            send_link_message(phone)
+            return Response(data=f'Reminder Invite link sent to {phone}', status=status.HTTP_201_CREATED)
+                   
         if serializer.is_valid():            
             number = serializer.validated_data.get("phone")
+            nationality = serializer.validated_data.get('nationality')
+            
+            risk_country_threshold = RiskThreshold.objects.filter(country=nationality).first()
             # This will be run is background using celery
             send_link_message(number)
+            serializer.validated_data['risk_country_threshold'] = risk_country_threshold
             serializer.validated_data["is_invited"] = True
             serializer.validated_data['status'] = constants.INVITED
             serializer.save()
@@ -68,6 +69,22 @@ class CustomerListView(ListAPIView):
         if param:
             customers = customers.exclude(customerincomedata__pk__isnull=True).filter(status=param)
         return customers
+    
+    
+    
+class CustomerOnBoard_view(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = OnBoardingSerializer
+    pagination_class = LimitOffsetPagination
+    
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     
 class OkraWebhookEventNotification(APIView):
@@ -114,12 +131,6 @@ class OkraWebhookEventNotification(APIView):
                     customer.address = data.get('address')
                     customer.phone = phone  # Set the phone number if not present in the customer object
                     customer.save()
-                # elif callback_type == constants.BALANCE:
-                #     payload = fetch_balance(customer.customer_id)
-                #     # customer.fill_account_balance(payload)
-                # elif callback_type == constants.INCOME:
-                #     fetch_income(customer.customer_id, customer)
-                    # CustomerIncomeData.fill_income_data(payload, customer)
                 return Response(status=status.HTTP_201_CREATED)
 
             return Response({'exception': 'Customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -143,27 +154,19 @@ class WaitListView(ListAPIView):
     queryset = Customer.objects.all()
     serializer_class = WaitListSerializer
     
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
     
-    
-class FetchBalanceView(APIView):
+
+class RiskThresholdView(CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Customer.objects.all()
-    serializer_class = ''
+    queryset = RiskThreshold.objects.all()
+    serializer_class = RiskThresholdSerializer
     
-    def post(self, request, format=None):
-        payload = json.loads(request.body.decode('utf-8'))
-        phone = payload.get('phone')
-        id = payload.get('id')
-        
-        # get customer from db
-        customer = Customer.objects.filter(phone=phone).first()
-              
-        # fetch balance base on customer db 
-        
     
-class FetchIncomeListView(APIView):
+class UdateRiskThresholdView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Customer.objects.all()
-    serializer_class = ''
+    queryset = RiskThreshold.objects.all()
+    serializer_class = RiskThresholdSerializer

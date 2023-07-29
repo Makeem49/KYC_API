@@ -98,18 +98,18 @@ WSGI_APPLICATION = "app.wsgi.application"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": env("SQL_ENGINE", 'django.db.backends.postgresql'),
-        "NAME": env("SQL_DATABASE", 'eky_db'),
-        "USER": env("SQL_USER", "eky_db_admin"),
-        "PASSWORD": env("SQL_PASSWORD", "ky_db_admin_password"),
-        "HOST": "localhost",
-        "PORT": 5432,
-    }, 
-    # "default" : {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+    # "default": {
+    #     "ENGINE": env("SQL_ENGINE", 'django.db.backends.postgresql'),
+    #     "NAME": env("SQL_DATABASE", 'eky_db'),
+    #     "USER": env("SQL_USER", "eky_db_admin"),
+    #     "PASSWORD": env("SQL_PASSWORD", "ky_db_admin_password"),
+    #     "HOST": "localhost",
+    #     "PORT": 5432,
+    # }, 
+    "default" : {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
