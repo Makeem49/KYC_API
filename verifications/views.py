@@ -18,7 +18,7 @@ from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
 
-from .utils import fetch_balance, fetch_identity, fetch_income
+# from .utils import fetch_balance, fetch_identity, fetch_income
 
 
 class SMSLinkView(APIView):
