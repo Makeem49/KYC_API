@@ -18,7 +18,7 @@ from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
 from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
-from .utils import extract_bvn_data
+# from .utils import extract_bvn_data
 
 # from .utils import fetch_balance, fetch_identity, fetch_income
 
