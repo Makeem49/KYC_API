@@ -104,7 +104,7 @@ class CustomerOnBoard_view(ListAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     
-class OkraWebhookEventNotification(APIView):
+class EventNotification(APIView):
     def post(self, request, format=None):
         print(request.data)
         return Response(status=status.HTTP_200_OK)
