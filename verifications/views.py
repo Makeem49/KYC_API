@@ -5,18 +5,20 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, CreateAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
+import django.http
 
 
 from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
                         CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer, 
-                        OnBoardingSerializer, RiskThresholdSerializer)
+                        VerifyUserViewSerializer, RiskThresholdSerializer, OnBoardingSerializer)
 from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
+from .utils import extract_bvn_data
 
 # from .utils import fetch_balance, fetch_identity, fetch_income
 
@@ -47,7 +49,22 @@ class SMSLinkView(APIView):
             return Response(data=f'Invite link send to {number}', status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class VerifyUserView(APIView):
+    """This endpoint send a post request to get the user information from the thrid party API we integrated."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
+    def post(self, request):
+        serializer = VerifyUserViewSerializer(data=request.data)
+        bvn = serializer.validated_data.get('bvn')
+        
+        try:
+            customer = Customer.objects.get(bvn=bvn)
+        except:
+            return Response({'exception': 'User not found. User bvn need to be register, before he/she identity can ba available'}, status=status.HTTP_404_NOT_FOUND)
+        
+
 class CustomerDetailView(RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -87,9 +104,10 @@ class CustomerOnBoard_view(ListAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     
-# class OkraWebhookEventNotification(APIView):
-#     def get(self, request, format=None):
-#         return Response(status=status.HTTP_200_OK)
+class OkraWebhookEventNotification(APIView):
+    def post(self, request, format=None):
+        print(request.data)
+        return Response(status=status.HTTP_200_OK)
 
 #     def post(self, request, format=None):
 #         try:
@@ -146,7 +164,7 @@ class CustomerUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerUpdateSerializer
-    
+        
     
 class WaitListView(ListAPIView):
     authentication_classes = [JWTAuthentication]
@@ -158,7 +176,7 @@ class WaitListView(ListAPIView):
         return super().list(request, *args, **kwargs)
     
 
-class RiskThresholdView(CreateAPIView):
+class RiskThresholdView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = RiskThreshold.objects.all()
@@ -170,3 +188,7 @@ class UdateRiskThresholdView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = RiskThreshold.objects.all()
     serializer_class = RiskThresholdSerializer
+    
+    
+
+    

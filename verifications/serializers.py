@@ -119,3 +119,9 @@ class RiskThresholdSerializer(serializers.ModelSerializer):
             data['country'] = data['country'].upper()
         return super().to_internal_value(data)
     
+    
+class VerifyUserViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['bvn']
+        

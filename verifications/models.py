@@ -165,22 +165,21 @@ class Customer(models.Model):
         
 class CustomerIncomeData(models.Model):
     """Table showing the customer income data"""
-    average_monthly_income = models.DecimalField(max_digits=16, decimal_places=2, null=False)
-    total_money_received = models.DecimalField(max_digits=16, decimal_places=2, null=False)
-    total_money_spent = models.DecimalField(max_digits=16, decimal_places=2, null=False)
-    eligibility_amount = models.DecimalField(max_digits=20, decimal_places=2, null=False)
+    average_monthly_income = models.DecimalField(max_digits=16, decimal_places=2, null=True)
+    total_money_received = models.DecimalField(max_digits=16, decimal_places=2, null=True)
+    total_money_spent = models.DecimalField(max_digits=16, decimal_places=2, null=True)
+    eligibility_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     debt_to_income = models.CharField(max_length=20, null=True)
     debt_to_income_reason = models.CharField(max_length=200, null=True)
     institution_name = models.CharField(max_length=30, null=False)
-    bank_code = models.IntegerField(null=False)
-    type = models.CharField(max_length=100, null=False)
-    balance = models.DecimalField(max_digits=10, null=False, decimal_places=2)
-    account_number = models.CharField(max_length=14, null=False)
-    
+    bank_code = models.IntegerField(null=True)
+    type = models.CharField(max_length=100, null=True)
+    balance = models.DecimalField(max_digits=10, null=True, decimal_places=2)
+    account_number = models.CharField(max_length=14, null=True)
     
     customer = models.ManyToManyField(Customer)
 
 
     def __str__(self) -> str:
-        return f"{self.customer.first_name} {self.customer.last_name} has {self.confidence} confidence level"
+        return f"{self.customer.first_name} {self.customer.last_name} has {self.balance} confidence level"
    
