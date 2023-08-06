@@ -129,15 +129,25 @@ class CustomerUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerUpdateSerializer
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        instance_come = instance.customerincomedata_set.all()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if instance_come:
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        return Response({'error' : 'User can not be update because he/she is still on waitlist'}, status=status.HTTP_400_BAD_REQUEST)
         
 class WaitListView(ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = WaitListSerializer
-    
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        
     
 class RiskThresholdView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
