@@ -34,13 +34,41 @@ class SendCustomerInviteSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    avarage_monthly_income = serializers.SerializerMethodField()
+    balance = serializers.SerializerMethodField()
     class Meta:
         model = Customer
         fields  = ['first_name', 'last_name', 'middle_name', 'is_verify', 'bvn', 
                    'phone', 'email', 'address', 'marital_status', 'photo_id', 
                    'dob', 'gender', 'nationality', 'borrower_id', 'status', 
                    'created_at', 'lga_origin', 'lga_residence', 'nin', 'watchlist',
-                   ]
+                   'avarage_monthly_income', 'balance']
+        
+    def get_balance(self, obj):
+        
+        customer_income = obj.customerincomedata_set.all()
+        balance = 0
+        for income in customer_income:
+            balance += income.balance
+
+        return balance
+    
+    def get_avarage_monthly_income(self, obj):
+        """Get all the account associated with the user, and add everything together and divide by 
+        the number of user account to get a true average for teh user."""
+        
+        customer_income = obj.customerincomedata_set.all()
+       
+        average_monthly_income = 0
+        for income in customer_income:
+            average_monthly_income += income.average_monthly_income
+            
+        average_monthly_income = average_monthly_income/len(customer_income)
+
+        return average_monthly_income
+ 
+
+        
         
         
 class CustomerUpdateSerializer(serializers.ModelSerializer):
@@ -51,10 +79,11 @@ class CustomerUpdateSerializer(serializers.ModelSerializer):
 
 class CustomerListSerializer(serializers.ModelSerializer):  
     risk_level = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
     
     class Meta:
         model = Customer
-        fields = ['id','name', 'phone', 'verification_country', 'status', 'risk_level']
+        fields = ['id','name', 'phone', 'nationality', 'status', 'risk_level']
         
         
     def get_risk_level(self, obj):
@@ -75,6 +104,9 @@ class CustomerListSerializer(serializers.ModelSerializer):
             risk_level = 'high'
         return risk_level
 
+    def get_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+
 
 class OnBoardingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -93,9 +125,18 @@ class OnBoardingSerializer(serializers.ModelSerializer):
 
               
 class RiskThresholdSerializer(serializers.ModelSerializer):
+    
+    countries = [
+        ('NIGERIA', 'NIGERIA'),
+        ('INDIA', 'INDIA'),
+        ('INDONESIA', 'INDONESIA'),
+        
+    ]
+    
+    country = serializers.ChoiceField(choices=countries, required=True)
     class Meta:
         model = RiskThreshold
-        fields = '__all__'
+        fields = ['id', 'account_balance', 'employed', 'minimum_monthly_salary', 'country']
         
     def to_internal_value(self, data):
         # Convert the 'country' field to uppercase if it exists in the data
@@ -104,6 +145,11 @@ class RiskThresholdSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
     
     
+class RiskThresholdUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RiskThreshold
+        fields = ['id', 'account_balance', 'employed', 'minimum_monthly_salary', 'country']
+            
 class VerifyUserViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer

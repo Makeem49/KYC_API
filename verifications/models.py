@@ -29,6 +29,11 @@ class RiskThreshold(models.Model):
     def __str__(self) -> str:
         return f"threshold id {self.id}"
     
+    def update(self, params):
+        for attr, value in params.items():
+            setattr(self, attr, value)   
+        self.save()
+    
     
 class AppID(models.Model):
     app_id = models.CharField(max_length=200, null=False)

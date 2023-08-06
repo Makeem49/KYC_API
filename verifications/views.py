@@ -14,7 +14,8 @@ import django.http
 
 from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
                         CustomerSerializer, WaitListSerializer, CustomerUpdateSerializer, 
-                        VerifyUserViewSerializer, RiskThresholdSerializer, OnBoardingSerializer)
+                        VerifyUserViewSerializer, RiskThresholdSerializer, OnBoardingSerializer, 
+                        RiskThresholdUpdateSerializer)
 from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
@@ -49,21 +50,6 @@ class SMSLinkView(APIView):
             return Response(data=f'Invite link send to {number}', status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# class VerifyUserView(APIView):
-#     """This endpoint send a post request to get the user information from the thrid party API we integrated."""
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [IsAuthenticated]
-    
-#     def post(self, request):
-#         serializer = VerifyUserViewSerializer(data=request.data)
-#         bvn = serializer.validated_data.get('bvn')
-        
-#         try:
-#             customer = Customer.objects.get(bvn=bvn)
-#         except:
-#             return Response({'exception': 'User not found. User bvn need to be register, before he/she identity can ba available'}, status=status.HTTP_404_NOT_FOUND)
-        
 
 class CustomerDetailView(RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
@@ -161,19 +147,26 @@ class RiskThresholdView(ListCreateAPIView):
     
     def post(self, request, *args, **kwargs):
         data = request.data
-        
-        for risk_country in data:
-            serializer = self.serializer_class(risk_country)
-            if serializer.is_valid():
-                data = serializer.save()                    
-        return Response(data='', status=status.HTTP_201_CREATED)
-    
-    
-    
+        countries = data.get('countries')
 
-class UdateRiskThresholdView(UpdateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = RiskThreshold.objects.all()
-    serializer_class = RiskThresholdSerializer
+        if countries:
+            for country in countries:
+                serializer = self.serializer_class(data=country)
+                if serializer.is_valid(raise_exception=True):
+                    country = serializer.validated_data.get('country')
+                            
+                    is_country_defined = RiskThreshold.objects.filter(country=country).first()
+                    if not is_country_defined:
+                        data = serializer.save()
+                    else:
+                        data = RiskThresholdUpdateSerializer(is_country_defined).data
+                        is_country_defined.update(data)
+            return Response(data=countries, status=status.HTTP_201_CREATED)
+        return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
     
+    
+    def get(self, request, *args, **kwargs):
+        countries = RiskThreshold.objects.all()
+        serializer = RiskThresholdSerializer(countries, many=True)
+        return Response(serializer.data)
+        
