@@ -18,9 +18,7 @@ from .serializers import (CustomerListSerializer, SendCustomerInviteSerializer,
 from .models import Customer, RiskThreshold
 from .tasks import send_link_message
 from . import constants
-# from .utils import extract_bvn_data
-
-# from .utils import fetch_balance, fetch_identity, fetch_income
+from .utils import RetrieveUserIncomeData
 
 
 class SMSLinkView(APIView):
@@ -30,13 +28,15 @@ class SMSLinkView(APIView):
     def post(self, request, format=None):
         serializer = SendCustomerInviteSerializer(data=request.data)
         phone = serializer.initial_data.get('phone')
-        customer = Customer.objects.filter(phone=phone).first()
+        bvn = serializer.initial_data.get('bvn')
+        customer = Customer.objects.filter(phone=phone, bvn=bvn).first()
         if customer:   
             send_link_message(phone)
             return Response(data=f'Reminder Invite link sent to {phone}', status=status.HTTP_201_CREATED)
                    
         if serializer.is_valid():            
             number = serializer.validated_data.get("phone")
+            bvn = serializer.validated_data.get('bvn')
             nationality = serializer.validated_data.get('nationality')
             
             risk_country_threshold = RiskThreshold.objects.filter(country=nationality).first()
@@ -50,19 +50,19 @@ class SMSLinkView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class VerifyUserView(APIView):
-    """This endpoint send a post request to get the user information from the thrid party API we integrated."""
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+# class VerifyUserView(APIView):
+#     """This endpoint send a post request to get the user information from the thrid party API we integrated."""
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
     
-    def post(self, request):
-        serializer = VerifyUserViewSerializer(data=request.data)
-        bvn = serializer.validated_data.get('bvn')
+#     def post(self, request):
+#         serializer = VerifyUserViewSerializer(data=request.data)
+#         bvn = serializer.validated_data.get('bvn')
         
-        try:
-            customer = Customer.objects.get(bvn=bvn)
-        except:
-            return Response({'exception': 'User not found. User bvn need to be register, before he/she identity can ba available'}, status=status.HTTP_404_NOT_FOUND)
+#         try:
+#             customer = Customer.objects.get(bvn=bvn)
+#         except:
+#             return Response({'exception': 'User not found. User bvn need to be register, before he/she identity can ba available'}, status=status.HTTP_404_NOT_FOUND)
         
 
 class CustomerDetailView(RetrieveAPIView):
@@ -106,66 +106,44 @@ class CustomerOnBoard_view(ListAPIView):
     
 class EventNotification(APIView):
     def post(self, request, format=None):
-        print(request.data)
+        request_data = request.data
+        event = request_data.get('event')
+        data = request_data.get('data')
+        bvn = data.get('bvn')
+        borrower_id = data.get('borrowerId') 
+
+        customer = Customer.objects.filter(bvn=bvn).first()
+
+        if event == constants.PDF_UPLOAD:
+            if customer:
+                user = RetrieveUserIncomeData(bvn)
+                data = user.send_identity_request('identity/verifyData')                
+                try:
+                    data = data.json()
+                    user_data = user.extract_bvn_data(data)
+                    user.save_identity_to_db(user_data)
+                except Exception as e:
+                    print(f'An error occured {e}')
+            
+        elif event == constants.INCOME_TRANSACTION:
+            if customer:
+                user = RetrieveUserIncomeData(bvn)
+                data = user.send_income_request('income/insight-data', borrower_id)
+        
+                try:
+                    data = data.json()
+                    user_income = user.extract_income_data(data)
+                    user = user.save_income_to_db(user_income)
+                except:
+                    print('Error occur in income')                  
         return Response(status=status.HTTP_200_OK)
 
-#     def post(self, request, format=None):
-#         try:
-#             payload = json.loads(request.body.decode('utf-8'))
-#             callback_type = payload.get('callback_type')
-
-#             if callback_type in (constants.AUTH, constants.TRANSACTIONS, constants.ACCOUNTS):
-#                 return Response(status=status.HTTP_200_OK)
-
-#             identity = payload.get('identity')
-#             customer_bvn = payload.get('customerBvn')
-#             customer_id = payload.get('customerId')
-
-#             if identity:
-#                 phone = identity.get('phone')[0]
-#                 customer, created = Customer.objects.get_or_create(phone=phone, defaults={'bvn': customer_bvn, 'customer_id': customer_id})
-#                 if created:
-#                     # New customer created, perform additional setup if needed
-#                     pass
-#             else:
-#                 customer = Customer.objects.filter(Q(bvn=customer_bvn) | Q(customer_id=customer_id)).first()
-
-#             print(customer)
-#             if customer:
-#                 if customer.complete_onboarding:
-#                     return Response({'exception': 'Customer already onboarded. Contact admin to request a new link.'}, 
-#                                     status=status.HTTP_201_CREATED)
-
-#                 if callback_type == constants.IDENTITY:
-#                     data = fetch_identity(customer.customer_id)
-#                     fetch_income(customer.customer_id, customer)
-#                     payload = fetch_balance(customer.customer_id)
-#                     customer.fill_account_balance(payload)
-#                     customer.first_name = data.get('first_name')
-#                     customer.last_name = data.get('last_name')
-#                     customer.dob = data.get('dob')
-#                     customer.gender = data.get('gender')
-#                     customer.email = data.get('email')
-#                     customer.address = data.get('address')
-#                     customer.phone = phone  # Set the phone number if not present in the customer object
-#                     customer.save()
-#                 return Response(status=status.HTTP_201_CREATED)
-
-#             return Response({'exception': 'Customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-#         except json.JSONDecodeError:
-#             return Response({'exception': 'Invalid JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
-#         except Exception as e:
-#             return Response({'exception': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    
 class CustomerUpdateView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerUpdateSerializer
         
-    
 class WaitListView(ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -175,20 +153,27 @@ class WaitListView(ListAPIView):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
-
 class RiskThresholdView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = RiskThreshold.objects.all()
     serializer_class = RiskThresholdSerializer
     
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        
+        for risk_country in data:
+            serializer = self.serializer_class(risk_country)
+            if serializer.is_valid():
+                data = serializer.save()                    
+        return Response(data='', status=status.HTTP_201_CREATED)
     
+    
+    
+
 class UdateRiskThresholdView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = RiskThreshold.objects.all()
     serializer_class = RiskThresholdSerializer
-    
-    
-
     

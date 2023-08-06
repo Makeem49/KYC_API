@@ -116,53 +116,10 @@ class Customer(models.Model):
 
     def update(self, params):
         for attr, value in params.items():
-            setattr(self, attr, value)
-            
+            setattr(self, attr, value)   
         self.save()
-        
-    def fill_customer_detail(self, payload):
-        data = {}
-        identity = payload.get('identity')
-        # data['bank_name'] = payload.get('bankName')
-        # data['bank_id'] = payload.get('bankId')
-        # data['customer_id'] = payload.get('customerId')
-        data['last_name'] = identity.get('lastname')
-        data['first_name'] = identity.get('firstname')
-        data['middle_name'] = identity.get('middlename', '')
-        data['is_verify'] = True
-        data['bvn'] = identity.get('bvn')
-        
-        
-        if identity.get('phone'):
-            data['phone'] = identity.get('phone')[0]
-        if payload.get('customerEmail'):
-            data['email'] = payload.get('customerEmail')[0]
             
-        if identity.get('address'):
-            data['address'] = identity.get('address')[0]
-        if identity.get('photo_id'):
-            data['photo_id'] = identity.get('photo_id')[0].get('url')
             
-        data['dob'] = identity.get('dob')
-        data['verification_country'] = identity.get('verification_country')
-        data['created_at'] = datetime.utcnow()
-        data['gender'] = identity.get('gender')
-        data['status'] = self.PENDING
-        data['marital_status'] = identity.get('marital_status')
-        
-            
-        try:
-            self.update(data)
-        except IntegrityError:
-            message = 'Customer id already exist'
-            raise serializers.ValidationError(message)         
-        
-    def fill_account_balance(self, payload):
-        # self.available_balance = payload.get('balance')[0].get('available_balance')
-        self.available_balance = payload.get('data').get('balance')[0].get('available_balance')
-        self.save()
-        
-        
 class CustomerIncomeData(models.Model):
     """Table showing the customer income data"""
     average_monthly_income = models.DecimalField(max_digits=16, decimal_places=2, null=True)
@@ -176,9 +133,8 @@ class CustomerIncomeData(models.Model):
     type = models.CharField(max_length=100, null=True)
     balance = models.DecimalField(max_digits=10, null=True, decimal_places=2)
     account_number = models.CharField(max_length=14, null=True)
-    
-    customer = models.ManyToManyField(Customer)
 
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=False)
 
     def __str__(self) -> str:
         return f"{self.customer.first_name} {self.customer.last_name} has {self.balance} confidence level"

@@ -1,7 +1,7 @@
 import requests
 import os 
 
-# from verifications.models import Customer
+from verifications.models import Customer, CustomerIncomeData
 
 # Your Account SID and Auth Token from console.twilio.com
 def send_bank_authorization_link(number,message_body):
@@ -107,23 +107,13 @@ class RetrieveUserIncomeData(object):
     def save_identity_to_db(self, data):
         """This method help to save extracted data to db"""
         data = self.extract_bvn_data(data)
-        # customer = Customer.objects.create(**data)
+        customer = Customer.objects.create(**data)
+        return customer
+    
+    def save_income_to_db(self, data, user):
+        """This method help to save extracted data to db"""
+        data = self.extract_income_data(data)
+        income = CustomerIncomeData.objects.create(**data)
+        income.customer_set.add(user)
+        return income
         
-        
-    
-    
-        
-user = RetrieveUserIncomeData('22375568132')
-data = user.send_identity_request('identity/verifyData')
-try:
-    data = data.json()
-    print(data)
-    user_data = user.extract_bvn_data(data)
-    # print(user_data)
-except Exception as e:
-    print(f'An error occured {e}')
-    
-    
-income = user.send_income_request('income/insight-data', '64c62b2095eb0dbf55bce821')
-
-print(income)
