@@ -96,10 +96,11 @@ class EventNotification(APIView):
         event = request_data.get('event')
         data = request_data.get('data')
         print(data)
-        # bvn = data.get('bvn')
-        # borrower_id = data.get('borrowerId') 
-        # print(borrower_id, 'borrower id')
-        # print(bvn, 'bvn')
+        print(event, 'event')
+        bvn = data.get('bvn')
+        borrower_id = data.get('borrowerId') 
+        print(borrower_id, 'borrower id')
+        print(bvn, 'bvn')
 
         # customer = Customer.objects.filter(bvn=bvn).first()
 
