@@ -102,7 +102,7 @@ class EventNotification(APIView):
         print(borrower_id, 'borrower id')
         print(bvn, 'bvn')
 
-        customer = Customer.objects.filter(Q(bvn=bvn), Q(borrower_id=borrower_id)).first()
+        customer = Customer.objects.filter(Q(bvn=bvn) | Q(borrower_id=borrower_id))
 
         if event == constants.PDF_UPLOAD:
             customer.borrower_id = borrower_id

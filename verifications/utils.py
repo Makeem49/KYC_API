@@ -50,6 +50,9 @@ class RetrieveUserIncomeData(object):
     
     def extract_bvn_data(self, data):
         """Help to extract user personal data from response data from third party API"""
+        
+        gender = 'M' if data.get("gender") == 'Male' else 'F'
+        
         return {
             "first_name" : data.get("firstName"),
             "last_name" : data.get("lastName"),
@@ -62,7 +65,7 @@ class RetrieveUserIncomeData(object):
             "address" : data.get("address"),
             "marital_status" : data.get("maritalStatus"),
             "photo_id" : data.get("photo"),
-            "gender" : data.get("gender"),
+            "gender" : gender,
             "nationality" : data.get("nationality"),
             "borrower_id" : data.get("_id"),
             "status" : 'PENDING',
