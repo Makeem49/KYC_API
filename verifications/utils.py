@@ -1,7 +1,7 @@
 import requests
 import os 
 
-# from verifications.models import Customer, CustomerIncomeData
+from verifications.models import Customer, CustomerIncomeData
 
 # Your Account SID and Auth Token from console.twilio.com
 def send_bank_authorization_link(number,message_body):
@@ -42,7 +42,9 @@ class RetrieveUserIncomeData(object):
     
     def send_income_request(self, endpoint, borrower_id):
         """Method for retrieving income data"""
-        response = requests.post(f"{self.base_url}{endpoint}/{borrower_id}", headers=self.headers) 
+        url = f'{self.base_url}{endpoint}/{borrower_id}'
+        print(url)
+        response = requests.get(f"{self.base_url}{endpoint}/{borrower_id}", headers=self.headers) 
         return response
     
     
@@ -73,57 +75,48 @@ class RetrieveUserIncomeData(object):
         
     def extract_income_data(self, data):
         """Hlep to retrieve user income data through an API"""
-        insight = data.get('insight')
-        linked_account = insight.get('linkedFinancialAccounts')
+        income_data = data.get('data')
         
-        if linked_account:
-            institution = linked_account.get('institution')
-            bank = institution.get('name')
-            bank_code = institution.get('bankCode')
-            account_type = institution.get('type')
-            
-            bvn = linked_account.get('bvn')
-            balance = linked_account.get('balance')
-            account_type = linked_account.get('type')
-            account_number = linked_account.get('accountNumber')
-            
+        edti = income_data.get('EDTI')
+    
+        if edti:
             return {
-                'average_monthly_income' : insight.get('avgMonthlyIncome'),
-                'total_money_received' : insight.get('totalmoneyReceive'),
-                'total_money_spent' : insight.get('totalmoneySpents'),
-                'eligibility_amount' : insight.get('eligibleAmount'),
-                'debt_to_income' : insight.get('DTI'),
-                'debt_to_income_reason' : insight.get('DTI_reason'),
-                'bank_code' : bank_code,
-                'type' : account_type,
-                'balance' : balance,
-                'account_number' : account_number, 
-                'bvn' : bvn, 
-                'bank' : bank
+                'average_monthly_income' : edti.get('average_monthly_income'),
+                'total_money_received' : edti.get('totalMoneyReceive'),
+                'total_money_spent' : edti.get('totalmoneySpents'),
+                'eligibility_amount' : edti.get('eligibleAmount'),
+                'debt_to_income' : edti.get('annual_edti'),
+                'debt_to_income_reason' : edti.get('DTI_reason')
             } 
         return {}
 
 
-    # def save_identity_to_db(self, data):
-    #     """This method help to save extracted data to db"""
-    #     data = self.extract_bvn_data(data)
-    #     customer = Customer.objects.create(**data)
-    #     return customer
+    def save_identity_to_db(self, data):
+        """This method help to save extracted data to db"""
+        customer = Customer.objects.create(**data)
+        return customer
     
-    # def save_income_to_db(self, data, user):
-    #     """This method help to save extracted data to db"""
-    #     data = self.extract_income_data(data)
-    #     income = CustomerIncomeData.objects.create(**data)
-    #     income.customer_set.add(user)
-    #     return income
+    def save_income_to_db(self, data, user):
+        """This method help to save extracted data to db"""
+        income = CustomerIncomeData(**data)
+        income.customer = user
+        return income
         
         
 # user = RetrieveUserIncomeData('22375568132')
+# identity = user.send_identity_request('identity/verifyData')
+
 # income = user.send_income_request('income/insight-data', '64ceb7196813f703053d21d8')
+# data = income.json()
+# income_data = user.extract_income_data(data)
+# print(income_data)
+
+# print(income.json())
 # # url = 'https://api.creditchek.africa/v1/income/api/process-income'
 
-# # income = user.send_income_request('income/api/process-income/', '64ceb7196813f703053d21d8')
+# income = user.send_income_request('income/api/process-income/', '64ceb7196813f703053d21d8')
 # print(income.json())
+
 
 # resp = requests.get('https://api.creditchek.africa/v1/income/insight-data/64ceb7196813f703053d21d8', 
 #                     headers={'token' : '3bv3Dn7HF/X4OEJOlp+Sa3/rbUkMEBsJlOGJyHv7tWV9nnAgIitZC6B2DiqsdGi4'})
