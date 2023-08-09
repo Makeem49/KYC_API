@@ -1,7 +1,7 @@
 import requests
 import os 
 
-from verifications.models import Customer, CustomerIncomeData
+# from verifications.models import Customer, CustomerIncomeData
 
 # Your Account SID and Auth Token from console.twilio.com
 def send_bank_authorization_link(number,message_body):
@@ -104,16 +104,28 @@ class RetrieveUserIncomeData(object):
         return {}
 
 
-    def save_identity_to_db(self, data):
-        """This method help to save extracted data to db"""
-        data = self.extract_bvn_data(data)
-        customer = Customer.objects.create(**data)
-        return customer
+    # def save_identity_to_db(self, data):
+    #     """This method help to save extracted data to db"""
+    #     data = self.extract_bvn_data(data)
+    #     customer = Customer.objects.create(**data)
+    #     return customer
     
-    def save_income_to_db(self, data, user):
-        """This method help to save extracted data to db"""
-        data = self.extract_income_data(data)
-        income = CustomerIncomeData.objects.create(**data)
-        income.customer_set.add(user)
-        return income
+    # def save_income_to_db(self, data, user):
+    #     """This method help to save extracted data to db"""
+    #     data = self.extract_income_data(data)
+    #     income = CustomerIncomeData.objects.create(**data)
+    #     income.customer_set.add(user)
+    #     return income
         
+        
+# user = RetrieveUserIncomeData('22375568132')
+# income = user.send_income_request('income/insight-data', '64ceb7196813f703053d21d8')
+# # url = 'https://api.creditchek.africa/v1/income/api/process-income'
+
+# # income = user.send_income_request('income/api/process-income/', '64ceb7196813f703053d21d8')
+# print(income.json())
+
+# resp = requests.get('https://api.creditchek.africa/v1/income/insight-data/64ceb7196813f703053d21d8', 
+#                     headers={'token' : '3bv3Dn7HF/X4OEJOlp+Sa3/rbUkMEBsJlOGJyHv7tWV9nnAgIitZC6B2DiqsdGi4'})
+
+# print(resp.json())

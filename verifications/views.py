@@ -95,35 +95,36 @@ class EventNotification(APIView):
         request_data = request.data
         event = request_data.get('event')
         data = request_data.get('data')
-        bvn = data.get('bvn')
-        borrower_id = data.get('borrowerId') 
-        print(borrower_id, 'borrower id')
-        print(bvn, 'bvn')
+        print(data)
+        # bvn = data.get('bvn')
+        # borrower_id = data.get('borrowerId') 
+        # print(borrower_id, 'borrower id')
+        # print(bvn, 'bvn')
 
-        customer = Customer.objects.filter(bvn=bvn).first()
+        # customer = Customer.objects.filter(bvn=bvn).first()
 
-        if event == constants.PDF_UPLOAD:
-            if customer:
-                user = RetrieveUserIncomeData(bvn)
-                data = user.send_identity_request('identity/verifyData')                
-                try:
-                    data = data.json()
-                    user_data = user.extract_bvn_data(data)
-                    user.save_identity_to_db(user_data)
-                except Exception as e:
-                    print(f'An error occured {e}')
+        # if event == constants.PDF_UPLOAD:
+        #     if customer:
+        #         user = RetrieveUserIncomeData(bvn)
+        #         data = user.send_identity_request('identity/verifyData')                
+        #         try:
+        #             data = data.json()
+        #             user_data = user.extract_bvn_data(data)
+        #             user.save_identity_to_db(user_data)
+        #         except Exception as e:
+        #             print(f'An error occured {e}')
             
-        elif event == constants.INCOME_TRANSACTION:
-            if customer:
-                user = RetrieveUserIncomeData(bvn)
-                data = user.send_income_request('income/insight-data', borrower_id)
+        # elif event == constants.INCOME_TRANSACTION:
+        #     if customer:
+        #         user = RetrieveUserIncomeData(bvn)
+        #         data = user.send_income_request('income/insight-data', borrower_id)
         
-                try:
-                    data = data.json()
-                    user_income = user.extract_income_data(data)
-                    user = user.save_income_to_db(user_income)
-                except:
-                    print('Error occur in income')                  
+        #         try:
+        #             data = data.json()
+        #             user_income = user.extract_income_data(data)
+        #             user = user.save_income_to_db(user_income)
+        #         except:
+        #             print('Error occur in income')                  
         return Response(status=status.HTTP_200_OK)
 
 class CustomerUpdateView(UpdateAPIView):
@@ -149,6 +150,10 @@ class WaitListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = WaitListSerializer
+    
+    def get_queryset(self):
+        customers = Customer.objects.filter(status='INVITED')
+        return customers
         
     
 class RiskThresholdView(ListCreateAPIView):
