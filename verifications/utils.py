@@ -102,7 +102,7 @@ class RetrieveUserIncomeData(object):
     def save_income_to_db(self, data, user):
         """This method help to save extracted data to db"""
         income = CustomerIncomeData(**data)
-        income.customer = user
+        # income.customer = user
         return income
         
         
