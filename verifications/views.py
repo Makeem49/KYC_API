@@ -103,21 +103,22 @@ class EventNotification(APIView):
         print(bvn, 'bvn')
 
         customer = Customer.objects.filter(Q(bvn=bvn) | Q(borrower_id=borrower_id)).first()
-
+        print(customer)
         if event == constants.PDF_UPLOAD:
             customer.borrower_id = borrower_id
             customer.save()
             if customer:
                 user = RetrieveUserIncomeData(bvn)
                 resp = user.send_identity_request('identity/verifyData')   
-                try:
-                    data = resp.json()                    
-                    user_data = user.extract_bvn_data(data)
-                    print(user_data, 'user data')
-                    # user.save_identity_to_db(user_data, customer)
-                    print('saved')
-                except Exception as e:
-                    print(f'An error occured {e}')
+                # try:
+                data = resp.json()                    
+                user_data = user.extract_bvn_data(data)
+                print(user_data, 'user')
+                user.save_identity_to_db(user_data, customer)
+                print('saved')
+                # except Exception as e:
+                    # print(f'An error occured {e}')
+                    # raise Exception(e)
             
         elif event == constants.INCOME_TRANSACTION:
             if customer:

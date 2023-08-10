@@ -98,25 +98,25 @@ class RetrieveUserIncomeData(object):
         """This method help to save extracted data to db"""
         # customer = Customer.objects.create(**data)
         
-        user.first_name = data.get("first_name"),
-        user.last_name = data.get("last_name"),
-        user.middle_name = data.get("middle_name"),
-        user.dob = data.get("dob"),
-        user.email = data.get("email"),
-        user.is_verify = True,
-        user.bvn = data.get("bvn"),
-        user.phone = data.get("phone"),
-        user.address = data.get("address"),
-        user.marital_status = data.get("marital_status"),
-        user.photo_id = data.get("photo_id"),
-        user.gender = data.get('gender'),
-        user.nationality = data.get("nationality"),
-        user.borrower_id = data.get("borrower_id"),
-        user.status = data.get('status'),
-        user.residential_address = data.get("residential_address"),
-        user.lga_origin = data.get("lga_origin"),
-        user.lga_residence = data.get("lga_residence"),
-        user.nin = data.get("nin"),
+        user.first_name = data.get("first_name")
+        user.last_name = data.get("last_name")
+        user.middle_name = data.get("middle_name")
+        user.dob = data.get("dob")
+        user.email = data.get("email")
+        user.is_verify = True
+        user.bvn = data.get("bvn")
+        user.phone = data.get("phone")
+        user.address = data.get("address")
+        user.marital_status = data.get("marital_status")
+        user.photo_id = data.get("photo_id")
+        user.gender = data.get('gender')
+        user.nationality = data.get("nationality")
+        user.borrower_id = data.get("borrower_id")
+        user.status = data.get('status')
+        user.residential_address = data.get("residential_address")
+        user.lga_origin = data.get("lga_origin")
+        user.lga_residence = data.get("lga_residence")
+        user.nin = data.get("nin")
         user.watchlist = data.get("watchlist")   
         user.save()
         return user
