@@ -109,12 +109,13 @@ class EventNotification(APIView):
             customer.save()
             if customer:
                 user = RetrieveUserIncomeData(bvn)
-                data = user.send_identity_request('identity/verifyData')                
+                resp = user.send_identity_request('identity/verifyData')   
+                print(resp)             
                 try:
-                    data = data.json()
+                    obj = resp.json()
+                    data = obj.get('data')
                     user_data = user.extract_bvn_data(data)
                     print(user_data, 'user data')
-                    # user.save_identity_to_db(user_data)
                 except Exception as e:
                     print(f'An error occured {e}')
             

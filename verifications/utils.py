@@ -94,7 +94,7 @@ class RetrieveUserIncomeData(object):
         return {}
 
 
-    def save_identity_to_db(self, data):
+    def save_identity_to_db(self, data, user):
         """This method help to save extracted data to db"""
         customer = Customer.objects.create(**data)
         return customer
@@ -108,6 +108,7 @@ class RetrieveUserIncomeData(object):
         
 # user = RetrieveUserIncomeData('22375568132')
 # identity = user.send_identity_request('identity/verifyData')
+# print(identity.json())
 
 # income = user.send_income_request('income/insight-data', '64ceb7196813f703053d21d8')
 # data = income.json()
