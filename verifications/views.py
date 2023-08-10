@@ -95,16 +95,13 @@ class EventNotification(APIView):
         request_data = request.data
         event = request_data.get('event')
         data = request_data.get('data')
-        print(data)
-        print(event, 'event')
         bvn = data.get('bvn')
         borrower_id = data.get('borrowerId') 
-        print(borrower_id, 'borrower id')
-        print(bvn, 'bvn')
 
         customer = Customer.objects.filter(Q(bvn=bvn) | Q(borrower_id=borrower_id)).first()
-        print(customer)
+        # print(customer)
         if event == constants.PDF_UPLOAD:
+            print(borrower_id, 'borrower id')
             customer.borrower_id = borrower_id
             customer.save()
             if customer:
@@ -113,7 +110,6 @@ class EventNotification(APIView):
             try:
                 data = resp.json()                    
                 user_data = user.extract_bvn_data(data)
-                print(user_data, 'user')
                 user.save_identity_to_db(user_data, customer)
                 print('saved')
             except Exception as e:
@@ -124,15 +120,14 @@ class EventNotification(APIView):
             if customer:
                 user = RetrieveUserIncomeData(bvn)
                 data = user.send_income_request('income/insight-data', borrower_id)
-
                 try:
                     data = data.json()
                     user_income = user.extract_income_data(data)
                     user = user.save_income_to_db(user_income, customer)
-                    print(user_income, 'user income')
-                except:
-                    print('Error occur in income')                  
+                except Exception as e:
+                    print(f'Error occur in income {e}')                  
         return Response(status=status.HTTP_200_OK)
+    
 
 class CustomerUpdateView(UpdateAPIView):
     authentication_classes = [JWTAuthentication]

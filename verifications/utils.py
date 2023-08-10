@@ -129,11 +129,12 @@ class RetrieveUserIncomeData(object):
         
         
 # user = RetrieveUserIncomeData('22375568132')
-# identity = user.send_identity_request('identity/verifyData')
+# identity = user.send_identity_request('identity/delete-borrower')
 # print(identity.json())
 
 # income = user.send_income_request('income/insight-data', '64ceb7196813f703053d21d8')
 # data = income.json()
+# print(data)
 # income_data = user.extract_income_data(data)
 # print(income_data)
 

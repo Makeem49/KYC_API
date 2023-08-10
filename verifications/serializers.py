@@ -45,11 +45,12 @@ class CustomerSerializer(serializers.ModelSerializer):
                    'avarage_monthly_income', 'balance']
         
     def get_balance(self, obj):
-        
         customer_income = obj.customerincomedata_set.all()
         balance = 0
+        """Since there is no point in using balance because the balance was splitted from creditcheck, we decide to replace 
+        it with average_monthy_income"""
         for income in customer_income:
-            balance += income.balance
+            balance += income.average_monthly_income
 
         return balance
     
