@@ -113,6 +113,7 @@ class EventNotification(APIView):
                 try:
                     data = resp.json()                    
                     user_data = user.extract_bvn_data(data)
+                    print(user_data, 'user data')
                     # user.save_identity_to_db(user_data, customer)
                     print('saved')
                 except Exception as e:
