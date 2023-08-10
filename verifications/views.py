@@ -115,6 +115,8 @@ class EventNotification(APIView):
                     data = resp.json()
                     user_data = user.extract_bvn_data(data)
                     print(user_data, 'user data')
+                    user.save_identity_to_db(user_data, customer)
+                    print('saved')
                 except Exception as e:
                     print(f'An error occured {e}')
             
@@ -122,12 +124,12 @@ class EventNotification(APIView):
             if customer:
                 user = RetrieveUserIncomeData(bvn)
                 data = user.send_income_request('income/insight-data', borrower_id)
-        
+
                 try:
                     data = data.json()
                     user_income = user.extract_income_data(data)
+                    user = user.save_income_to_db(user_income, customer)
                     print(user_income, 'user income')
-                    # user = user.save_income_to_db(user_income, customer)
                 except:
                     print('Error occur in income')                  
         return Response(status=status.HTTP_200_OK)

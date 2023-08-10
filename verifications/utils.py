@@ -1,7 +1,7 @@
 import requests
 import os 
 
-from verifications.models import Customer, CustomerIncomeData
+from verifications.models import CustomerIncomeData
 
 # Your Account SID and Auth Token from console.twilio.com
 def send_bank_authorization_link(number,message_body):
@@ -96,13 +96,35 @@ class RetrieveUserIncomeData(object):
 
     def save_identity_to_db(self, data, user):
         """This method help to save extracted data to db"""
-        customer = Customer.objects.create(**data)
-        return customer
+        # customer = Customer.objects.create(**data)
+        
+        user.first_name = data.get("first_name"),
+        user.last_name = data.get("last_name"),
+        user.middle_name = data.get("middle_name"),
+        user.dob = data.get("dob"),
+        user.email = data.get("email"),
+        user.is_verify = data.get('is_verify'),
+        user.bvn = data.get("bvn"),
+        user.phone = data.get("phone"),
+        user.address = data.get("address"),
+        user.marital_status = data.get("marital_status"),
+        user.photo_id = data.get("photo_id"),
+        user.gender = data.get('gender'),
+        user.nationality = data.get("nationality"),
+        user.borrower_id = data.get("borrower_id"),
+        user.status = data.get('status'),
+        user.residential_address = data.get("residential_address"),
+        user.lga_origin = data.get("lga_origin"),
+        user.lga_residence = data.get("lga_residence"),
+        user.nin = data.get("nin"),
+        user.watchlist = data.get("watchlist")   
+        user.save()
+        return user
     
     def save_income_to_db(self, data, user):
         """This method help to save extracted data to db"""
-        income = CustomerIncomeData(**data)
-        # income.customer = user
+        data['customer'] = user
+        income = CustomerIncomeData.objects.create(**data)
         return income
         
         
