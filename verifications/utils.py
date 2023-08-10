@@ -103,7 +103,7 @@ class RetrieveUserIncomeData(object):
         user.middle_name = data.get("middle_name"),
         user.dob = data.get("dob"),
         user.email = data.get("email"),
-        user.is_verify = data.get('is_verify'),
+        user.is_verify = True,
         user.bvn = data.get("bvn"),
         user.phone = data.get("phone"),
         user.address = data.get("address"),
