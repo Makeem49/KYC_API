@@ -112,8 +112,7 @@ class EventNotification(APIView):
                 resp = user.send_identity_request('identity/verifyData')   
                 print(resp)             
                 try:
-                    obj = resp.json()
-                    data = obj.get('data')
+                    data = resp.json()
                     user_data = user.extract_bvn_data(data)
                     print(user_data, 'user data')
                 except Exception as e:

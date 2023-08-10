@@ -48,9 +48,9 @@ class RetrieveUserIncomeData(object):
         return response
     
     
-    def extract_bvn_data(self, data):
+    def extract_bvn_data(self, resp_data):
         """Help to extract user personal data from response data from third party API"""
-        
+        data = resp_data.get('data')
         gender = 'M' if data.get("gender") == 'Male' else 'F'
         
         return {
