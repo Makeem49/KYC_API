@@ -67,7 +67,6 @@ class RetrieveUserIncomeData(object):
             "photo_id" : data.get("photo"),
             "gender" : gender,
             "nationality" : data.get("nationality"),
-            "borrower_id" : data.get("_id"),
             "status" : 'PENDING',
             "residential_address" : data.get("residentialAddress"),
             "lga_origin" : data.get("lgaOfOrigin"),
