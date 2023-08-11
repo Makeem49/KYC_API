@@ -64,7 +64,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         for income in customer_income:
             average_monthly_income += income.average_monthly_income
             
-        average_monthly_income = average_monthly_income/len(customer_income)
+        if len(customer_income) > 0: 
+            average_monthly_income = average_monthly_income/len(customer_income)
 
         return average_monthly_income
  
