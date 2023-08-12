@@ -61,7 +61,7 @@ class RetrieveUserIncomeData(object):
             "email" : data.get("email"),
             "is_verify" : True,
             "bvn" : data.get("bvn"),
-            "phone" : str(data.get("phones")[0]) if data.get('phones') else 'null',
+            # "phone" : str(data.get("phones")[0]) if data.get('phones') else 'null',
             "address" : data.get("address"),
             "marital_status" : data.get("maritalStatus"),
             "photo_id" : data.get("photo"),
@@ -104,7 +104,7 @@ class RetrieveUserIncomeData(object):
         user.email = data.get("email")
         user.is_verify = True
         user.bvn = data.get("bvn")
-        user.phone = data.get("phone")
+        # user.phone = data.get("phone")
         user.address = data.get("address")
         user.marital_status = data.get("marital_status")
         user.photo_id = data.get("photo_id")
