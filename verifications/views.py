@@ -117,19 +117,28 @@ class EventNotification(APIView):
                 print(f'An error occured {e}')
                 raise Exception(e)
             
-        elif event == constants.INCOME_TRANSACTION:
-            print(event)
-            if customer:
-                print(customer)
-                user = RetrieveUserIncomeData(bvn)
-                data = user.send_income_request('income/insight-data', borrower_id)
-                try:
-                    data = data.json()
-                    user_income = user.extract_income_data(data)
-                    user = user.save_income_to_db(user_income, customer)
-                    print('incoem saved')
-                except Exception as e:
-                    print(f'Error occur in income {e}')                  
+            data = user.send_income_request('income/insight-data', borrower_id)
+            try:
+                data = data.json()
+                user_income = user.extract_income_data(data)
+                user = user.save_income_to_db(user_income, customer)
+                print('incoem saved')
+            except Exception as e:
+                print(f'Error occur in income {e}')  
+            
+        # elif event == constants.INCOME_TRANSACTION:
+        #     print(event)
+        #     if customer:
+        #         print(customer)
+        #         user = RetrieveUserIncomeData(bvn)
+        #         data = user.send_income_request('income/insight-data', borrower_id)
+        #         try:
+        #             data = data.json()
+        #             user_income = user.extract_income_data(data)
+        #             user = user.save_income_to_db(user_income, customer)
+        #             print('incoem saved')
+        #         except Exception as e:
+        #             print(f'Error occur in income {e}')                  
         return Response(status=status.HTTP_200_OK)
     
 
