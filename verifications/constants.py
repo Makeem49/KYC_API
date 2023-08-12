@@ -14,3 +14,5 @@ INVITED = 'INVITED'
 
 PDF_UPLOAD = 'pdf_upload'
 INCOME_TRANSACTION = 'income_transaction'
+
+NIGERIA = 'NIGERIA'
