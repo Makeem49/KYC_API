@@ -43,7 +43,7 @@ class SMSLinkView(APIView):
             if nationality == constants.NIGERIA and not bvn:
                 'if country is Nigeria and bvn is not given or the lenght is not 11 numbers, return a error response requesting for bvn'
                 
-                if bvn and len(bvn) != 11:
+                if bvn and not (len(bvn) != 11):
                     return Response({'error' : 'BVN number is 11 character long.'}, status=status.HTTP_406_NOT_ACCEPTABLE) 
                 
                 return Response({'error' : 'BVN number is required for users in Nigeria'}, status=status.HTTP_406_NOT_ACCEPTABLE)             
