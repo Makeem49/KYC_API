@@ -46,7 +46,7 @@ class SMSLinkView(APIView):
             
             if len(bvn) != constants.BVN_LENGTH:
                 'if bvn lenght is not 11 numbers, return error'
-                return Response({'error' : 'BVN number is 11 character long.'}, status=status.HTTP_406_NOT_ACCEPTABLE)             
+                return Response({'error' : 'BVN number is less/greater than 11 characters long.'}, status=status.HTTP_406_NOT_ACCEPTABLE)             
             
             risk_country_threshold = RiskThreshold.objects.filter(country=nationality).first()
             # This will be run is background using celery
