@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, ListCreateAPIView, Lis
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
@@ -95,15 +95,16 @@ class EventNotification(APIView):
         request_data = request.data
         event = request_data.get('event')
         data = request_data.get('data')
+        print(request_data, 'request data')
         bvn = data.get('bvn')
         borrower_id = data.get('borrowerId') 
 
         customer = Customer.objects.filter(Q(bvn=bvn) | Q(borrower_id=borrower_id)).first()
-        # print(customer)
         if event == constants.PDF_UPLOAD:
             print(borrower_id, 'borrower id')
             customer.borrower_id = borrower_id
             customer.save()
+            print(customer.borrower_id, 'saved borrower id')
             if customer:
                 user = RetrieveUserIncomeData(bvn)
                 resp = user.send_identity_request('identity/verifyData')   
@@ -117,13 +118,16 @@ class EventNotification(APIView):
                 raise Exception(e)
             
         elif event == constants.INCOME_TRANSACTION:
+            print(event)
             if customer:
+                print(customer)
                 user = RetrieveUserIncomeData(bvn)
                 data = user.send_income_request('income/insight-data', borrower_id)
                 try:
                     data = data.json()
                     user_income = user.extract_income_data(data)
                     user = user.save_income_to_db(user_income, customer)
+                    print('incoem saved')
                 except Exception as e:
                     print(f'Error occur in income {e}')                  
         return Response(status=status.HTTP_200_OK)
