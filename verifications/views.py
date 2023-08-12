@@ -41,12 +41,12 @@ class SMSLinkView(APIView):
             nationality = serializer.validated_data.get('nationality')
             
             if nationality == constants.NIGERIA and not bvn:
-                'if country is Nigeria and bvn is not given or the lenght is not 11 numbers, return a error response requesting for bvn'
-                
-                if bvn and not (len(bvn) != 11):
-                    return Response({'error' : 'BVN number is 11 character long.'}, status=status.HTTP_406_NOT_ACCEPTABLE) 
-                
-                return Response({'error' : 'BVN number is required for users in Nigeria'}, status=status.HTTP_406_NOT_ACCEPTABLE)             
+                'if country is Nigeria and bvn is not given return a error response requesting for bvn'               
+                return Response({'error' : 'BVN number is required for users in Nigeria'}, status=status.HTTP_406_NOT_ACCEPTABLE) 
+            
+            if len(bvn) != constants.BVN_LENGTH:
+                'if bvn lenght is not 11 numbers, return error'
+                return Response({'error' : 'BVN number is 11 character long.'}, status=status.HTTP_406_NOT_ACCEPTABLE)             
             
             risk_country_threshold = RiskThreshold.objects.filter(country=nationality).first()
             # This will be run is background using celery
