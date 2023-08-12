@@ -108,7 +108,7 @@ class CustomerListSerializer(serializers.ModelSerializer):
         return risk_level
     
     def get_submission_date(self, obj):
-        return self.updated_at
+        return obj.updated_at
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}"
