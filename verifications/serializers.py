@@ -151,6 +151,12 @@ class RiskThresholdUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RiskThreshold
         fields = ['id', 'account_balance', 'employed', 'minimum_monthly_salary', 'country']
+        
+    def to_internal_value(self, data):
+        # Convert the 'country' field to uppercase if it exists in the data
+        if 'country' in data:
+            data['country'] = data['country'].upper()
+        return super().to_internal_value(data)
             
 class VerifyUserViewSerializer(serializers.ModelSerializer):
     class Meta:

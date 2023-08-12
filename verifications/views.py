@@ -122,23 +122,9 @@ class EventNotification(APIView):
                 data = data.json()
                 user_income = user.extract_income_data(data)
                 user = user.save_income_to_db(user_income, customer)
-                print('incoem saved')
+                print('income saved')
             except Exception as e:
-                print(f'Error occur in income {e}')  
-            
-        # elif event == constants.INCOME_TRANSACTION:
-        #     print(event)
-        #     if customer:
-        #         print(customer)
-        #         user = RetrieveUserIncomeData(bvn)
-        #         data = user.send_income_request('income/insight-data', borrower_id)
-        #         try:
-        #             data = data.json()
-        #             user_income = user.extract_income_data(data)
-        #             user = user.save_income_to_db(user_income, customer)
-        #             print('incoem saved')
-        #         except Exception as e:
-        #             print(f'Error occur in income {e}')                  
+                print(f'Error occur in income {e}')                   
         return Response(status=status.HTTP_200_OK)
     
 
@@ -182,18 +168,24 @@ class RiskThresholdView(ListCreateAPIView):
         countries = data.get('countries')
 
         if countries:
-            for country in countries:
-                serializer = self.serializer_class(data=country)
+            for country_data in countries:
+                serializer = self.serializer_class(data=country_data)
                 if serializer.is_valid(raise_exception=True):
                     country = serializer.validated_data.get('country')
                             
-                    is_country_defined = RiskThreshold.objects.filter(country=country).first()
-                    if not is_country_defined:
-                        data = serializer.save()
-                    else:
-                        data = RiskThresholdUpdateSerializer(is_country_defined).data
-                        is_country_defined.update(data)
-            return Response(data=countries, status=status.HTTP_201_CREATED)
+                instance, created = RiskThreshold.objects.update_or_create(
+                    country=country,
+                    defaults=serializer.validated_data
+                )
+                
+                if not created:
+                    updated_serializer = self.serializer_class(instance, data=country_data)
+                    updated_serializer.is_valid(raise_exception=True)
+                    instance = updated_serializer.save()
+            
+            countries = RiskThreshold.objects.all()
+            serializer = RiskThresholdSerializer(countries, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'error' : 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
     
     
@@ -201,4 +193,4 @@ class RiskThresholdView(ListCreateAPIView):
         countries = RiskThreshold.objects.all()
         serializer = RiskThresholdSerializer(countries, many=True)
         return Response(serializer.data)
-        
+    

@@ -110,7 +110,6 @@ class RetrieveUserIncomeData(object):
         user.photo_id = data.get("photo_id")
         user.gender = data.get('gender')
         user.nationality = data.get("nationality")
-        user.borrower_id = data.get("borrower_id")
         user.status = data.get('status')
         user.residential_address = data.get("residential_address")
         user.lga_origin = data.get("lga_origin")
