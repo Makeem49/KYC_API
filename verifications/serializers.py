@@ -82,10 +82,11 @@ class CustomerUpdateSerializer(serializers.ModelSerializer):
 class CustomerListSerializer(serializers.ModelSerializer):  
     risk_level = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    submission_date = serializers.SerializerMethodField()
     
     class Meta:
         model = Customer
-        fields = ['id','name', 'phone', 'nationality', 'status', 'risk_level']
+        fields = ['id','name', 'phone', 'nationality', 'risk_level', 'submission_date']
         
         
     def get_risk_level(self, obj):
@@ -105,6 +106,9 @@ class CustomerListSerializer(serializers.ModelSerializer):
         if total_income < country_risk_balance:
             risk_level = 'high'
         return risk_level
+    
+    def get_submission_date(self, obj):
+        return self.updated_at
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}"

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.db.utils import IntegrityError
 from rest_framework import serializers
+from django.
 
 # Create your models here.
 
@@ -100,6 +101,7 @@ class Customer(models.Model):
 
     # time the user grant us access to their account and when last the account was updated 
     created_at = models.DateTimeField(null=True, default=datetime.utcnow)
+    updated_at = models.DateTimeField(null=True, default=datetime.utcnow)
     
     residential_address = models.CharField(max_length=200, null=False)
     residential_type = models.CharField(max_length=20, choices=RESIDENTIAL_TYPE, null=False)

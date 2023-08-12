@@ -1,5 +1,6 @@
 import requests
 import os 
+from datetime import datetime
 
 from verifications.models import CustomerIncomeData
 
@@ -117,6 +118,7 @@ class RetrieveUserIncomeData(object):
         user.nin = data.get("nin")
         user.watchlist = data.get("watchlist")   
         user.save()
+        user.updated_at = datetime.utcnow()
         return user
     
     def save_income_to_db(self, data, user):
