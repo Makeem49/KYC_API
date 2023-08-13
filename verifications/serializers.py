@@ -38,7 +38,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     balance = serializers.SerializerMethodField()
     class Meta:
         model = Customer
-        fields  = ['first_name', 'last_name', 'middle_name', 'is_verify', 'bvn', 
+        fields  = ['id','first_name', 'last_name', 'middle_name', 'is_verify', 'bvn', 
                    'phone', 'email', 'address', 'marital_status', 'photo_id', 
                    'dob', 'gender', 'nationality', 'borrower_id', 'status', 
                    'created_at', 'lga_origin', 'lga_residence', 'nin', 'watchlist',
