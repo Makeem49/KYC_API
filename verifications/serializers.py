@@ -35,7 +35,7 @@ class SendCustomerInviteSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     avarage_monthly_income = serializers.SerializerMethodField()
-    balance = serializers.SerializerMethodField()
+    # balance = serializers.SerializerMethodField()
     class Meta:
         model = Customer
         fields  = ['first_name', 'last_name', 'middle_name', 'is_verify', 'bvn', 
@@ -44,15 +44,15 @@ class CustomerSerializer(serializers.ModelSerializer):
                    'created_at', 'lga_origin', 'lga_residence', 'nin', 'watchlist',
                    'avarage_monthly_income', 'balance']
         
-    def get_balance(self, obj):
-        customer_income = obj.customerincomedata_set.all()
-        balance = 0
-        """Since there is no point in using balance because the balance was splitted from creditcheck, we decide to replace 
-        it with average_monthy_income"""
-        for income in customer_income:
-            balance += income.average_monthly_income
+    # def get_balance(self, obj):
+    #     customer_income = obj.customerincomedata_set.all()
+    #     balance = 0
+    #     """Since there is no point in using balance because the balance was splitted from creditcheck, we decide to replace 
+    #     it with average_monthy_income"""
+    #     for income in customer_income:
+    #         balance += income.average_monthly_income
 
-        return balance
+    #     return balance
     
     def get_avarage_monthly_income(self, obj):
         """Get all the account associated with the user, and add everything together and divide by 

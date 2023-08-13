@@ -81,6 +81,14 @@ class RetrieveUserIncomeData(object):
         income_data = data.get('data')
         
         edti = income_data.get('EDTI')
+        balance_obj = edti.get('balance')
+        balance_values = balance_obj.values()
+        balance_to_list = list(balance_values)
+        last_three_month_balance = balance_to_list[-3:]
+        
+        balance = 0
+        for monthly_balance in last_three_month_balance:
+            balance += monthly_balance
     
         if edti:
             return {
@@ -89,7 +97,8 @@ class RetrieveUserIncomeData(object):
                 'total_money_spent' : edti.get('totalmoneySpents'),
                 'eligibility_amount' : edti.get('eligibleAmount'),
                 'debt_to_income' : edti.get('annual_edti'),
-                'debt_to_income_reason' : edti.get('DTI_reason')
+                'debt_to_income_reason' : edti.get('DTI_reason'), 
+                'balance' : balance
             } 
         return {}
 
@@ -132,9 +141,10 @@ class RetrieveUserIncomeData(object):
 # identity = user.send_identity_request('identity/delete-borrower')
 # print(identity.json())
 
-# income = user.send_income_request('income/insight-data', '64ceb7196813f703053d21d8')
+# income = user.send_income_request('income/insight-data', '64d6bdaf69034338ae47b5d5')
 # data = income.json()
 # print(data)
+# print()
 # income_data = user.extract_income_data(data)
 # print(income_data)
 
