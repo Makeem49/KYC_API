@@ -35,7 +35,7 @@ class SendCustomerInviteSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     avarage_monthly_income = serializers.SerializerMethodField()
-    # balance = serializers.SerializerMethodField()
+    balance = serializers.SerializerMethodField()
     class Meta:
         model = Customer
         fields  = ['first_name', 'last_name', 'middle_name', 'is_verify', 'bvn', 
