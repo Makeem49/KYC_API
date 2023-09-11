@@ -66,8 +66,9 @@ class CustomerSerializer(serializers.ModelSerializer):
             
         if len(customer_income) > 0: 
             average_monthly_income = average_monthly_income/len(customer_income)
-
-        return average_monthly_income
+            
+        convert_to_naira = average_monthly_income/100
+        return convert_to_naira
  
 
         
