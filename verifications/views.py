@@ -30,7 +30,7 @@ class SMSLinkView(APIView):
         serializer = SendCustomerInviteSerializer(data=request.data)
         phone = serializer.initial_data.get('phone')
         bvn = serializer.initial_data.get('bvn')
-        customer = Customer.objects.filter(phone=phone, bvn=bvn).first()
+        customer = Customer.objects.filter(phone=phone, bvn=bvn).first() or Customer.objects.filter(phone=phone).first()
         if customer:   
             send_link_message(phone)
             return Response(data=f'Reminder Invite link sent to {phone}', status=status.HTTP_201_CREATED)
