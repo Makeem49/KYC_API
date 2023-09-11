@@ -91,22 +91,26 @@ class CustomerListSerializer(serializers.ModelSerializer):
         
         
     def get_risk_level(self, obj):
-        """Get all the account associated with the user, and add everything together and divide by 
-        the number of user account to get a true average for teh user."""
-        
+        """Get all the account associated with the user, add everything together, and divide by 
+        the number of user accounts to get a true average for the user."""
+
         customer_income = obj.customerincomedata_set.all()
         country_risk_balance = obj.risk_country_threshold.account_balance
-        
+
         total_income = 0
-        for income in customer_income:
-            total_income += income.average_monthly_income
-            
-        total_income = total_income/len(customer_income)
-            
+        if customer_income:
+            for income in customer_income:
+                total_income += income.average_monthly_income
+
+            total_income = total_income / len(customer_income)
+        else:
+            total_income = 0  # Handle the case where there are no customer income data.
+
         risk_level = 'pass'
         if total_income < country_risk_balance:
             risk_level = 'high'
         return risk_level
+
     
     def get_submission_date(self, obj):
         return obj.updated_at
