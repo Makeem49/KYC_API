@@ -95,7 +95,7 @@ class CustomerListSerializer(serializers.ModelSerializer):
         the number of user accounts to get a true average for the user."""
 
         customer_income = obj.customerincomedata_set.all()
-        country_risk_balance = obj.risk_country_threshold.account_balance
+        country_risk_balance = obj.risk_country_threshold.minimum_monthly_salary
 
         total_income = 0
         if customer_income:
@@ -106,9 +106,9 @@ class CustomerListSerializer(serializers.ModelSerializer):
         else:
             total_income = 0  # Handle the case where there are no customer income data.
 
-        risk_level = 'pass'
-        if total_income < country_risk_balance:
-            risk_level = 'high'
+        risk_level = 'high'
+        if total_income > country_risk_balance:
+            risk_level = 'pass'
         return risk_level
 
     
