@@ -7,7 +7,9 @@ from app.celery import app
 def send_link_message(phone_number):
     message = """
     Hello from simbard HQ, Kindly authorize us your account information by clicking on the below link. 
-    https://app.okra.ng/PfCVZi7-s
+    Click the below link, fill the form with correct information. 
+
+    https://app.creditchek.africa/customer/onboarding?type=short&appId=5293878414&appLink=eFd1ZNdJda&app_id=64aac9d453a97b63508946e7&status=true
     
     Please use your salary account. 
     
