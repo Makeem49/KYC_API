@@ -15,7 +15,6 @@ def send_link_message(phone_number):
 
     https://app.creditchek.africa/customer/onboarding?type=short&appId=5293878414&appLink=eFd1ZNdJda&app_id=64aac9d453a97b63508946e7&status=true
     
-    Please use your salary account. 
     
     Thanks  
     """
