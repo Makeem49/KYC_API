@@ -100,7 +100,7 @@ class CustomerListSerializer(serializers.ModelSerializer):
         total_income = 0
         if customer_income:
             for income in customer_income:
-                total_income += income.average_monthly_income
+                total_income += income.average_monthly_income / 100
 
             total_income = total_income / len(customer_income)
         else:
